@@ -25,6 +25,9 @@ export function QuestionCard({
 
   // Cleanup all audio on component unmount or question change
   useEffect(() => {
+    // Reset isPlaying state immediately when question changes
+    setIsPlaying(false);
+
     return () => {
       // Stop main question audio
       if (audioRef.current) {
@@ -151,15 +154,9 @@ export function QuestionCard({
       }
     };
 
-    return (
-      <button
-        key={option.id}
-        onClick={() => !answered && onAnswer(option.id)}
-        disabled={answered}
-        className={`w-full p-4 border-2 rounded-lg transition-all ${bgColor} ${borderColor} ${
-          !answered ? 'cursor-pointer' : 'cursor-default'
-        }`}
-      >
+    // Shared content for all option types
+    const optionContent = (
+      <>
         {option.type === 'text' && (
           <span className="text-lg font-medium">{option.label}</span>
         )}
@@ -207,6 +204,28 @@ export function QuestionCard({
         {answered && isSelected && !isCorrect && (
           <span className="ml-2 text-red-600 font-bold">✗ Wrong</span>
         )}
+      </>
+    );
+
+    // Use conditional wrapper to allow audio buttons to work after answering
+    if (answered) {
+      return (
+        <div
+          key={option.id}
+          className={`w-full p-4 border-2 rounded-lg transition-all cursor-default ${bgColor} ${borderColor}`}
+        >
+          {optionContent}
+        </div>
+      );
+    }
+
+    return (
+      <button
+        key={option.id}
+        onClick={() => onAnswer(option.id)}
+        className={`w-full p-4 border-2 rounded-lg transition-all cursor-pointer ${bgColor} ${borderColor}`}
+      >
+        {optionContent}
       </button>
     );
   };
