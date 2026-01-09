@@ -259,22 +259,24 @@ export function QuestionCard({
 
   return (
     <div className="max-w-4xl mx-auto p-6">
-      <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-        {question.questionText}
-      </h2>
+      <div className="flex justify-center mb-6">
+        <div className="bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 shadow-xl p-6">
+          <h2 className="text-2xl font-bold text-center mb-6 text-white">
+            {question.questionText}
+          </h2>
 
-      {/* Display bird name for reverse mode (name-to-media) */}
-      {question.questionType === 'name-to-media' && (
-        <div className="mb-6 text-center">
-          <div className="inline-block bg-blue-100 px-8 py-4 rounded-lg shadow-md">
-            <span className="text-3xl font-bold text-blue-900">
-              {question.bird.commonName}
-            </span>
-          </div>
+          {/* Display bird name for reverse mode (name-to-media) */}
+          {question.questionType === 'name-to-media' && (
+            <div className="mb-6 text-center">
+              <span className="text-3xl font-bold text-blue-300">
+                {question.bird.commonName}
+              </span>
+            </div>
+          )}
+
+          {renderMedia()}
         </div>
-      )}
-
-      {renderMedia()}
+      </div>
 
       <div className="space-y-3">
         {question.options.map(option => renderOption(option))}

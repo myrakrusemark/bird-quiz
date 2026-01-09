@@ -17,27 +17,20 @@ export function ProgressBar({
   onSettingsClick
 }: ProgressBarProps) {
   return (
-    <div className="bg-black/60 backdrop-blur-sm shadow-xl rounded-lg border border-white/20 p-4 mb-6">
-      <div className="flex justify-between items-center">
-        <div className="flex gap-6 items-center flex-1">
-          <div className="flex items-center gap-3">
-            <div>
-              <span className="text-sm text-white/70">Rolling Accuracy</span>
-              <p className="text-xl font-bold text-green-300">{rollingAccuracy}%</p>
+    <div className="flex justify-center mb-6">
+      <div className="inline-flex items-center gap-4 bg-black/60 backdrop-blur-sm shadow-xl rounded-lg border border-white/20 px-4 py-2">
+        <div className="flex items-center gap-2">
+          <p className="text-xl font-bold text-green-300">{rollingAccuracy}%</p>
+          {/* Sparkline chart */}
+          {answers.length >= 2 && (
+            <div className="w-16 h-6">
+              <AccuracyGraph answers={answers} height={24} compact={true} />
             </div>
-            {/* Sparkline chart */}
-            {answers.length >= 2 && (
-              <div className="w-24 h-10">
-                <AccuracyGraph answers={answers} height={40} compact={true} />
-              </div>
-            )}
-          </div>
-          <div>
-            <span className="text-sm text-white/70">Streak</span>
-            <p className="text-xl font-bold text-yellow-300">
-              {streak > 0 ? `🔥 ${streak}` : '0'}
-            </p>
-          </div>
+          )}
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="text-xl">🔥</span>
+          <p className="text-xl font-bold text-yellow-300">{streak}</p>
         </div>
 
         {/* Settings button */}

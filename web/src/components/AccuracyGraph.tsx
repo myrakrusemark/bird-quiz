@@ -42,7 +42,7 @@ export function AccuracyGraph({ answers, height = 200, compact = false }: Accura
           <Line
             type="monotone"
             dataKey="accuracy"
-            stroke="#fbbf24"
+            stroke="#86efac"
             strokeWidth={2}
             dot={false}
             isAnimationActive={false}
