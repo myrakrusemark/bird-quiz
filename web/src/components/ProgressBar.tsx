@@ -12,33 +12,29 @@ interface ProgressBarProps {
 export function ProgressBar({
   rollingAccuracy,
   streak,
-  totalAnswered,
+  totalAnswered: _totalAnswered,
   answers,
   onSettingsClick
 }: ProgressBarProps) {
   return (
-    <div className="bg-white shadow-md rounded-lg p-4 mb-6">
+    <div className="bg-black/60 backdrop-blur-sm shadow-xl rounded-lg border border-white/20 p-4 mb-6">
       <div className="flex justify-between items-center">
         <div className="flex gap-6 items-center flex-1">
-          <div>
-            <span className="text-sm text-gray-600">Answered</span>
-            <p className="text-xl font-bold">{totalAnswered}</p>
-          </div>
           <div className="flex items-center gap-3">
             <div>
-              <span className="text-sm text-gray-600">Rolling Accuracy</span>
-              <p className="text-xl font-bold text-blue-600">{rollingAccuracy}%</p>
+              <span className="text-sm text-white/70">Rolling Accuracy</span>
+              <p className="text-xl font-bold text-green-300">{rollingAccuracy}%</p>
             </div>
             {/* Sparkline chart */}
             {answers.length >= 2 && (
-              <div className="w-32 h-12">
-                <AccuracyGraph answers={answers} height={48} compact={true} />
+              <div className="w-24 h-10">
+                <AccuracyGraph answers={answers} height={40} compact={true} />
               </div>
             )}
           </div>
           <div>
-            <span className="text-sm text-gray-600">Streak</span>
-            <p className="text-xl font-bold text-orange-600">
+            <span className="text-sm text-white/70">Streak</span>
+            <p className="text-xl font-bold text-yellow-300">
               {streak > 0 ? `🔥 ${streak}` : '0'}
             </p>
           </div>
@@ -48,7 +44,7 @@ export function ProgressBar({
         {onSettingsClick && (
           <button
             onClick={onSettingsClick}
-            className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
             aria-label="Quiz Settings"
           >
             <svg
