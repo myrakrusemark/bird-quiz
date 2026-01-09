@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Progress, LearningMode } from '@/types/bird';
+import type { Progress, LearningMode, QuestionType, AnswerFormat, AnswerRecord } from '@/types/bird';
 import { calculateAccuracy } from '@/utils/scoring';
 
 const STORAGE_KEY = 'bird-learning-progress';
@@ -13,6 +13,12 @@ const DEFAULT_PROGRESS: Progress = {
   },
   modeStats: { correct: 0, total: 0 },  // Single object since only 'mixed' mode exists
   speciesStats: {},
+  rollingStats: {
+    answers: [],
+    currentStreak: 0,
+    maxStreak: 0,
+    totalAnswers: 0,
+  },
 };
 
 /**
@@ -30,6 +36,16 @@ function loadProgress(): Progress {
           // Old format - extract mixed mode stats
           parsed.modeStats = parsed.modeStats.mixed;
         }
+      }
+
+      // Add rollingStats if missing (migration for endless mode)
+      if (!parsed.rollingStats) {
+        parsed.rollingStats = {
+          answers: [],
+          currentStreak: 0,
+          maxStreak: 0,
+          totalAnswers: 0,
+        };
       }
 
       return parsed;
@@ -68,7 +84,9 @@ export function useProgress() {
   const recordAnswer = (
     speciesId: string,
     _mode: LearningMode,
-    correct: boolean
+    correct: boolean,
+    questionType: QuestionType,
+    answerFormat: AnswerFormat
   ) => {
     setProgress(prev => {
       const newProgress = { ...prev };
@@ -107,6 +125,34 @@ export function useProgress() {
       }
       newProgress.speciesStats[speciesId].lastSeen = new Date().toISOString();
 
+      // Update rolling stats (for endless mode)
+      const newAnswer: AnswerRecord = {
+        timestamp: new Date().toISOString(),
+        speciesId,
+        correct,
+        questionType,
+        answerFormat,
+      };
+
+      // Add to rolling window
+      const updatedAnswers = [...newProgress.rollingStats.answers, newAnswer];
+
+      // Keep only last 20 answers (circular buffer)
+      if (updatedAnswers.length > 20) {
+        updatedAnswers.shift(); // Remove oldest
+      }
+
+      // Update streak
+      const newStreak = correct ? newProgress.rollingStats.currentStreak + 1 : 0;
+      const maxStreak = Math.max(newProgress.rollingStats.maxStreak, newStreak);
+
+      newProgress.rollingStats = {
+        answers: updatedAnswers,
+        currentStreak: newStreak,
+        maxStreak,
+        totalAnswers: newProgress.rollingStats.totalAnswers + 1,
+      };
+
       return newProgress;
     });
   };
@@ -142,6 +188,24 @@ export function useProgress() {
     return progress.speciesStats[speciesId] || { correct: 0, total: 0 };
   };
 
+  /**
+   * Get rolling accuracy percentage (0-100)
+   */
+  const getRollingAccuracy = () => {
+    const { answers } = progress.rollingStats;
+    if (answers.length === 0) return 0;
+    const correctCount = answers.filter(a => a.correct).length;
+    return Math.round((correctCount / answers.length) * 100);
+  };
+
+  /**
+   * Get streak data
+   */
+  const getStreakData = () => ({
+    current: progress.rollingStats.currentStreak,
+    max: progress.rollingStats.maxStreak,
+  });
+
   return {
     progress,
     recordAnswer,
@@ -149,5 +213,7 @@ export function useProgress() {
     resetModeProgress,
     getModeStats,
     getSpeciesStats,
+    getRollingAccuracy,
+    getStreakData,
   };
 }

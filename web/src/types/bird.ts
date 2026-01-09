@@ -101,12 +101,27 @@ export interface Question {
   secondaryMediaType?: 'photo' | 'audio';  // NEW
 }
 
+// Answer record for rolling stats tracking
+export interface AnswerRecord {
+  timestamp: string;
+  speciesId: string;
+  correct: boolean;
+  questionType: QuestionType;
+  answerFormat: AnswerFormat;
+}
+
+// Rolling stats for endless mode
+export interface RollingStats {
+  answers: AnswerRecord[];     // Last 20 answers (circular buffer)
+  currentStreak: number;        // Persistent streak
+  maxStreak: number;            // Best streak achieved
+  totalAnswers: number;         // Total questions answered all-time
+}
+
 // Quiz state types
 export interface QuizState {
   currentQuestion: Question | null;
   questionNumber: number;
-  totalQuestions: number;
-  score: number;
   streak: number;
   mode: LearningMode;
   answered: boolean;
@@ -136,4 +151,5 @@ export interface Progress {
   };
   modeStats: ModeStats;  // Single object since only 'mixed' mode exists
   speciesStats: Record<string, SpeciesStats>;
+  rollingStats: RollingStats;  // Rolling accuracy tracking for endless mode
 }

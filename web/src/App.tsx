@@ -13,10 +13,10 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Load random subset of birds for the quiz
-  const { birds, loading: birdsLoading } = useBirdData(10);
+  const { birds, loading: birdsLoading } = useBirdData(20);
 
   // Progress tracking
-  const { progress, recordAnswer } = useProgress();
+  const { progress, recordAnswer, getRollingAccuracy } = useProgress();
 
   // Quiz state
   const {
@@ -24,9 +24,7 @@ function App() {
     startQuiz,
     nextQuestion,
     checkAnswer,
-    resetQuiz,
-    isQuizComplete,
-  } = useQuiz(10, settings);
+  } = useQuiz(settings);
 
   const handleAnswer = (answerId: string) => {
     checkAnswer(answerId);
@@ -37,7 +35,9 @@ function App() {
       recordAnswer(
         quizState.currentQuestion.bird.id,
         quizState.mode,
-        isCorrect
+        isCorrect,
+        quizState.currentQuestion.questionType,
+        quizState.currentQuestion.answerFormat
       );
     }
   };
@@ -47,7 +47,7 @@ function App() {
   };
 
   // Start quiz when birds finish loading
-  if (!quizState.currentQuestion && birds.length > 0 && !isQuizComplete) {
+  if (!quizState.currentQuestion && birds.length > 0) {
     startQuiz(birds);
   }
 
@@ -63,76 +63,15 @@ function App() {
     );
   }
 
-  // Quiz complete screen
-  if (isQuizComplete) {
-    const accuracy = Math.round((quizState.score / (quizState.totalQuestions * 15)) * 100);
-
-    return (
-      <div className="min-h-screen flex items-center justify-center p-6">
-        <div className="max-w-2xl w-full bg-white rounded-xl shadow-2xl p-12 text-center">
-          <div className="text-6xl mb-6">
-            {accuracy >= 80 ? '🏆' : accuracy >= 60 ? '⭐' : '📚'}
-          </div>
-
-          <h2 className="text-4xl font-bold text-gray-800 mb-4">
-            Quiz Complete!
-          </h2>
-
-          <div className="space-y-4 mb-8">
-            <div className="text-6xl font-bold text-blue-600">
-              {quizState.score}
-            </div>
-            <p className="text-xl text-gray-600">Total Score</p>
-
-            <div className="grid grid-cols-2 gap-4 mt-6">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="text-3xl font-bold text-green-600">
-                  {progress.modeStats.correct}
-                </div>
-                <p className="text-sm text-gray-600">Correct</p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="text-3xl font-bold text-gray-700">
-                  {progress.modeStats.total}
-                </div>
-                <p className="text-sm text-gray-600">Total</p>
-              </div>
-            </div>
-
-            <div className="bg-blue-50 p-4 rounded-lg mt-4">
-              <div className="text-2xl font-bold text-blue-600">
-                {progress.modeStats.accuracy || 0}%
-              </div>
-              <p className="text-sm text-gray-600">Overall Accuracy</p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <button
-              onClick={() => {
-                resetQuiz();
-                startQuiz(birds);
-              }}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors"
-            >
-              Play Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // Quiz in progress
   return (
     <div className="min-h-screen p-6">
       <div className="max-w-4xl mx-auto">
         <ProgressBar
-          current={quizState.questionNumber}
-          total={quizState.totalQuestions}
-          score={quizState.score}
-          streak={quizState.streak}
+          rollingAccuracy={getRollingAccuracy()}
+          streak={progress.rollingStats.currentStreak}
+          totalAnswered={progress.rollingStats.totalAnswers}
+          answers={progress.rollingStats.answers}
           onSettingsClick={() => setSettingsOpen(true)}
         />
 
@@ -163,9 +102,7 @@ function App() {
                   onClick={handleNext}
                   className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors shadow-lg"
                 >
-                  {quizState.questionNumber < quizState.totalQuestions
-                    ? 'Next Question →'
-                    : 'Finish Quiz'}
+                  Next Question →
                 </button>
               </div>
             )}
