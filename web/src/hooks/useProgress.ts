@@ -67,7 +67,7 @@ export function useProgress() {
    */
   const recordAnswer = (
     speciesId: string,
-    mode: LearningMode,
+    _mode: LearningMode,
     correct: boolean
   ) => {
     setProgress(prev => {

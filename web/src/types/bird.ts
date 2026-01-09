@@ -54,6 +54,27 @@ export interface BirdDataset {
 // Learning mode types
 export type LearningMode = 'mixed';
 
+// Question type variations
+export type QuestionType =
+  | 'photo-to-name'        // Photo → Name (existing)
+  | 'audio-to-name'        // Audio → Name (existing)
+  | 'photo-audio-to-name'  // Photo + Audio → Name (NEW)
+  | 'name-to-media'        // Name → Media (NEW reverse mode)
+  | 'mixed';               // Random (existing)
+
+// Answer format variations
+export type AnswerFormat =
+  | 'text'    // All text answers
+  | 'photo'   // All photo answers (image-only)
+  | 'audio'   // All audio answers (audio-only)
+  | 'mixed';  // Random mix (existing)
+
+// Quiz settings/preferences
+export interface QuizSettings {
+  enabledQuestionTypes: QuestionType[];
+  enabledAnswerFormats: AnswerFormat[];
+}
+
 // Question types
 export interface QuestionOption {
   id: string;
@@ -67,13 +88,17 @@ export interface QuestionOption {
 export interface Question {
   id: string;
   mode: LearningMode;
+  questionType: QuestionType;         // NEW: specific question type
+  answerFormat: AnswerFormat;         // NEW: answer format used
   bird: Bird;
   recording?: BirdRecording;
   questionText: string;
   correctAnswer: string;
   options: QuestionOption[];
-  mediaUrl?: string; // For photo/audio display
+  mediaUrl?: string;                  // Primary media (photo or audio)
   mediaType?: 'photo' | 'audio';
+  secondaryMediaUrl?: string;         // NEW: For photo+audio combined
+  secondaryMediaType?: 'photo' | 'audio';  // NEW
 }
 
 // Quiz state types

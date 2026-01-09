@@ -59,6 +59,38 @@ export function QuestionCard({
   };
 
   const renderMedia = () => {
+    // Handle photo + audio combined
+    if (question.mediaUrl && question.secondaryMediaUrl) {
+      return (
+        <div className="mb-6 flex flex-col items-center gap-4">
+          {/* Photo */}
+          <img
+            src={question.mediaUrl}
+            alt="Bird to identify"
+            className="w-full max-w-md mx-auto rounded-lg shadow-lg object-cover"
+            style={{ maxHeight: '400px' }}
+          />
+
+          {/* Audio player */}
+          <div className="w-full max-w-md text-center">
+            <audio
+              ref={audioRef}
+              src={question.secondaryMediaUrl}
+              onEnded={() => setIsPlaying(false)}
+              onPause={() => setIsPlaying(false)}
+              onPlay={() => setIsPlaying(true)}
+            />
+            <button
+              onClick={handlePlayAudio}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg transition-all transform hover:scale-105"
+            >
+              {isPlaying ? '⏹️ Stop' : '▶️ Play Bird Call'}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
     if (!question.mediaUrl) return null;
 
     switch (question.mediaType) {
@@ -90,11 +122,6 @@ export function QuestionCard({
             >
               {isPlaying ? '⏹️ Stop' : '▶️ Play Bird Call'}
             </button>
-            {question.recording && (
-              <p className="mt-2 text-sm text-gray-600">
-                Recording type: {question.recording.type}
-              </p>
-            )}
           </div>
         );
 
@@ -235,6 +262,17 @@ export function QuestionCard({
       <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
         {question.questionText}
       </h2>
+
+      {/* Display bird name for reverse mode (name-to-media) */}
+      {question.questionType === 'name-to-media' && (
+        <div className="mb-6 text-center">
+          <div className="inline-block bg-blue-100 px-8 py-4 rounded-lg shadow-md">
+            <span className="text-3xl font-bold text-blue-900">
+              {question.bird.commonName}
+            </span>
+          </div>
+        </div>
+      )}
 
       {renderMedia()}
 

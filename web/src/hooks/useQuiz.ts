@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { Bird, Question, QuizState, LearningMode } from '@/types/bird';
+import type { Bird, QuizState, LearningMode, QuizSettings } from '@/types/bird';
 import { generateQuestion } from '@/utils/questionGenerator';
 import { calculateScore } from '@/utils/scoring';
 
@@ -18,7 +18,7 @@ const DEFAULT_QUIZ_STATE: QuizState = {
 /**
  * Hook for managing quiz state and logic
  */
-export function useQuiz(totalQuestions: number = 10) {
+export function useQuiz(totalQuestions: number = 10, settings: QuizSettings) {
   const mode: LearningMode = 'mixed';
   const [state, setState] = useState<QuizState>({
     ...DEFAULT_QUIZ_STATE,
@@ -30,7 +30,7 @@ export function useQuiz(totalQuestions: number = 10) {
    * Start a new quiz with given birds
    */
   const startQuiz = useCallback((birds: Bird[]) => {
-    const firstQuestion = generateQuestion('mixed', birds);
+    const firstQuestion = generateQuestion(birds, settings);
 
     setState({
       ...DEFAULT_QUIZ_STATE,
@@ -39,7 +39,7 @@ export function useQuiz(totalQuestions: number = 10) {
       currentQuestion: firstQuestion,
       questionNumber: 1,
     });
-  }, [totalQuestions]);
+  }, [totalQuestions, settings]);
 
   /**
    * Generate next question
@@ -54,7 +54,7 @@ export function useQuiz(totalQuestions: number = 10) {
         };
       }
 
-      const nextQ = generateQuestion(prev.mode, birds);
+      const nextQ = generateQuestion(birds, settings);
 
       return {
         ...prev,
@@ -65,7 +65,7 @@ export function useQuiz(totalQuestions: number = 10) {
         isCorrect: null,
       };
     });
-  }, []);
+  }, [settings]);
 
   /**
    * Check if answer is correct and update state
@@ -105,7 +105,7 @@ export function useQuiz(totalQuestions: number = 10) {
   /**
    * Check if quiz is complete
    */
-  const isQuizComplete = state.questionNumber >= state.totalQuestions && state.answered;
+  const isQuizComplete = state.questionNumber > state.totalQuestions;
 
   return {
     state,

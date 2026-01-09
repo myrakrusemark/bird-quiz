@@ -1,10 +1,17 @@
+import { useState } from 'react';
 import { useBirdData } from './hooks/useBirdData';
 import { useQuiz } from './hooks/useQuiz';
+import { useQuizSettings } from './hooks/useQuizSettings';
 import { useProgress } from './hooks/useProgress';
 import { QuestionCard } from './components/QuestionCard';
 import { ProgressBar } from './components/ProgressBar';
+import { QuizSettings } from './components/QuizSettings';
 
 function App() {
+  // Quiz settings
+  const { settings, updateSettings } = useQuizSettings();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
   // Load random subset of birds for the quiz
   const { birds, loading: birdsLoading } = useBirdData(10);
 
@@ -19,7 +26,7 @@ function App() {
     checkAnswer,
     resetQuiz,
     isQuizComplete,
-  } = useQuiz(10);
+  } = useQuiz(10, settings);
 
   const handleAnswer = (answerId: string) => {
     checkAnswer(answerId);
@@ -37,10 +44,6 @@ function App() {
 
   const handleNext = () => {
     nextQuestion(birds);
-  };
-
-  const handleBackToMenu = () => {
-    resetQuiz();
   };
 
   // Start quiz when birds finish loading
@@ -130,6 +133,18 @@ function App() {
           total={quizState.totalQuestions}
           score={quizState.score}
           streak={quizState.streak}
+          onSettingsClick={() => setSettingsOpen(true)}
+        />
+
+        {/* Settings Modal */}
+        <QuizSettings
+          settings={settings}
+          onSave={(newSettings) => {
+            updateSettings(newSettings);
+            setSettingsOpen(false);
+          }}
+          onCancel={() => setSettingsOpen(false)}
+          isOpen={settingsOpen}
         />
 
         {quizState.currentQuestion && (
