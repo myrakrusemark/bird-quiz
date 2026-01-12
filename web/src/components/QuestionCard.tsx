@@ -73,7 +73,7 @@ export function QuestionCard({
             src={question.mediaUrl}
             alt="Bird to identify"
             className="w-full max-w-md mx-auto rounded-lg shadow-lg object-cover"
-            onExpand={() => setExpandedImage(question.mediaUrl)}
+            onExpand={() => setExpandedImage(question.mediaUrl || null)}
             iconPosition="bottom-right"
           />
 
@@ -107,7 +107,7 @@ export function QuestionCard({
               src={question.mediaUrl}
               alt="Bird to identify"
               className="w-full max-w-md mx-auto rounded-lg shadow-lg object-cover"
-              onExpand={() => setExpandedImage(question.mediaUrl)}
+              onExpand={() => setExpandedImage(question.mediaUrl || null)}
               iconPosition="bottom-right"
             />
           </div>
@@ -199,8 +199,8 @@ export function QuestionCard({
         {option.type === 'text-image' && option.imageUrl && (
           <div className="flex items-center gap-3">
             <ExpandableImage
-              src={option.imageUrl}
-              alt={showLabel ? option.label : 'Bird'}
+              src={option.imageUrl!}
+              alt={option.label || 'Bird'}
               className="w-16 h-16 object-cover rounded"
               onExpand={() => setExpandedImage(option.imageUrl!)}
               iconPosition="bottom-right"
@@ -212,8 +212,8 @@ export function QuestionCard({
         {option.type === 'image-only' && option.imageUrl && (
           <div className="relative w-full">
             <ExpandableImage
-              src={option.imageUrl}
-              alt={showLabel ? option.label : 'Bird'}
+              src={option.imageUrl!}
+              alt={option.label || 'Bird'}
               className="w-full h-full object-cover rounded-lg"
               onExpand={() => setExpandedImage(option.imageUrl!)}
               iconPosition="bottom-right"
@@ -265,13 +265,13 @@ export function QuestionCard({
     }
 
     return (
-      <button
+      <div
         key={option.id}
         onClick={() => onAnswer(option.id)}
         className={`w-full ${containerPadding} border-2 rounded-lg transition-all cursor-pointer ${bgColor} ${borderColor}`}
       >
         {optionContent}
-      </button>
+      </div>
     );
   };
 
