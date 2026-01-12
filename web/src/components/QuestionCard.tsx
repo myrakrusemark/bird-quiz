@@ -258,28 +258,32 @@ export function QuestionCard({
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="flex justify-center mb-6">
-        <div className="bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 shadow-xl p-6">
-          <h2 className="text-2xl font-bold text-center mb-6 text-white">
-            {question.questionText}
-          </h2>
+    <div className="max-w-6xl mx-auto p-6">
+      <div className="flex flex-col lg:flex-row gap-6 items-start">
+        {/* Question box */}
+        <div className="flex justify-center lg:flex-1">
+          <div className="bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 shadow-xl p-6">
+            <h2 className="text-2xl font-bold text-center mb-6 text-white">
+              {question.questionText}
+            </h2>
 
-          {/* Display bird name for reverse mode (name-to-media) */}
-          {question.questionType === 'name-to-media' && (
-            <div className="mb-6 text-center">
-              <span className="text-3xl font-bold text-blue-300">
-                {question.bird.commonName}
-              </span>
-            </div>
-          )}
+            {/* Display bird name for reverse mode (name-to-media) */}
+            {question.questionType === 'name-to-media' && (
+              <div className="mb-6 text-center">
+                <span className="text-3xl font-bold text-blue-300">
+                  {question.bird.commonName}
+                </span>
+              </div>
+            )}
 
-          {renderMedia()}
+            {renderMedia()}
+          </div>
         </div>
-      </div>
 
-      <div className="space-y-3">
-        {question.options.map(option => renderOption(option))}
+        {/* Answer grid */}
+        <div className="w-full lg:w-96 grid grid-cols-2 gap-3">
+          {question.options.map(option => renderOption(option))}
+        </div>
       </div>
 
       {answered && question.recording && (

@@ -166,7 +166,8 @@ function createMixedOption(
   type: 'text' | 'text-image' | 'image-only' | 'audio-only',
   recording: any,
   excludePhotoUrl?: string,
-  excludeAudioUrl?: string
+  excludeAudioUrl?: string,
+  hideLabel?: boolean
 ): QuestionOption {
   switch (type) {
     case 'text':
@@ -174,6 +175,7 @@ function createMixedOption(
         id: bird.id,
         label: bird.commonName,
         type: 'text',
+        hideLabel: hideLabel || false,
       };
 
     case 'text-image': {
@@ -189,6 +191,7 @@ function createMixedOption(
             id: bird.id,
             label: bird.commonName,
             type: 'text',
+            hideLabel: hideLabel || false,
           };
         }
 
@@ -202,6 +205,7 @@ function createMixedOption(
         imageUrl,
         label: bird.commonName,
         type: 'text-image',
+        hideLabel: hideLabel || false,
       };
     }
 
@@ -218,6 +222,7 @@ function createMixedOption(
             id: bird.id,
             label: bird.commonName,
             type: 'text',
+            hideLabel: hideLabel || false,
           };
         }
 
@@ -231,7 +236,7 @@ function createMixedOption(
         imageUrl,
         label: bird.commonName,
         type: 'image-only',
-        hideLabel: true,  // Hidden until answered
+        hideLabel: hideLabel !== undefined ? hideLabel : true,  // Hidden until answered (or as specified)
       };
     }
 
@@ -246,6 +251,7 @@ function createMixedOption(
             id: bird.id,
             label: bird.commonName,
             type: 'text',
+            hideLabel: hideLabel || false,
           };
         }
 
@@ -257,6 +263,7 @@ function createMixedOption(
             id: bird.id,
             label: bird.commonName,
             type: 'text',
+            hideLabel: hideLabel || false,
           };
         }
 
@@ -270,7 +277,7 @@ function createMixedOption(
         audioUrl: audioRecording ? getRecordingAudioUrl(audioRecording) : undefined,
         label: bird.commonName,
         type: 'audio-only',
-        hideLabel: true,  // Hidden until answered
+        hideLabel: hideLabel !== undefined ? hideLabel : true,  // Hidden until answered (or as specified)
       };
     }
   }
