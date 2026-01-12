@@ -369,7 +369,10 @@ export function generateNameToMediaQuestion(birds: Bird[], answerFormat: AnswerF
   const options = createAnswerOptions(
     correctBird,
     wrongBirds,
-    answerFormat
+    answerFormat,
+    undefined,
+    undefined,
+    true  // This is a name-to-media question
   );
 
   if (!options) return null;
@@ -412,7 +415,8 @@ function createAnswerOptions(
   wrongBirds: Bird[],
   answerFormat: AnswerFormat,
   excludePhotoUrl?: string,
-  excludeAudioUrl?: string
+  excludeAudioUrl?: string,
+  isNameToMediaQuestion?: boolean
 ): QuestionOption[] | null {
   const options: QuestionOption[] = [];
 
@@ -498,7 +502,10 @@ function createAnswerOptions(
 
     case 'mixed': {
       // Mixed answer types (random mix) - use existing logic
-      const answerTypes = ['text', 'text-image', 'image-only', 'audio-only'] as const;
+      // For name-to-media questions, exclude text-based answers since the question already shows the bird name
+      const answerTypes = isNameToMediaQuestion
+        ? (['image-only', 'audio-only'] as const)
+        : (['text', 'text-image', 'image-only', 'audio-only'] as const);
 
       for (const bird of allBirds) {
         const randomType = answerTypes[Math.floor(Math.random() * answerTypes.length)];

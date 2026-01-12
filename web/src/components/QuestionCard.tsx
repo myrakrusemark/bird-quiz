@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import type { Question, QuestionOption } from '@/types/bird';
+import { ExpandableImage } from './ExpandableImage';
+import { ImageModal } from './ImageModal';
 
 interface QuestionCardProps {
   question: Question;
@@ -22,6 +24,9 @@ export function QuestionCard({
   // Track all option audio instances
   const optionAudioRefs = useRef<Map<string, HTMLAudioElement>>(new Map());
   const [audioPlaying, setAudioPlaying] = useState<Record<string, boolean>>({});
+
+  // Track expanded image for modal
+  const [expandedImage, setExpandedImage] = useState<string | null>(null);
 
   // Cleanup all audio on component unmount or question change
   useEffect(() => {
@@ -64,11 +69,12 @@ export function QuestionCard({
       return (
         <div className="mb-6 flex flex-col items-center gap-4">
           {/* Photo */}
-          <img
+          <ExpandableImage
             src={question.mediaUrl}
             alt="Bird to identify"
             className="w-full max-w-md mx-auto rounded-lg shadow-lg object-cover"
-            style={{ maxHeight: '400px' }}
+            onExpand={() => setExpandedImage(question.mediaUrl)}
+            iconPosition="bottom-right"
           />
 
           {/* Audio player */}
@@ -97,11 +103,12 @@ export function QuestionCard({
       case 'photo':
         return (
           <div className="mb-6">
-            <img
+            <ExpandableImage
               src={question.mediaUrl}
               alt="Bird to identify"
               className="w-full max-w-md mx-auto rounded-lg shadow-lg object-cover"
-              style={{ maxHeight: '400px' }}
+              onExpand={() => setExpandedImage(question.mediaUrl)}
+              iconPosition="bottom-right"
             />
           </div>
         );
@@ -134,6 +141,7 @@ export function QuestionCard({
     const isSelected = selectedAnswer === option.id;
     const isCorrectAnswer = option.id === question.correctAnswer;
     const showLabel = !option.hideLabel || answered;
+    const isImageOnly = option.type === 'image-only';
 
     let bgColor = 'bg-white hover:bg-gray-50';
     let borderColor = 'border-gray-300';
@@ -190,23 +198,31 @@ export function QuestionCard({
 
         {option.type === 'text-image' && option.imageUrl && (
           <div className="flex items-center gap-3">
-            <img
+            <ExpandableImage
               src={option.imageUrl}
               alt={showLabel ? option.label : 'Bird'}
               className="w-16 h-16 object-cover rounded"
+              onExpand={() => setExpandedImage(option.imageUrl!)}
+              iconPosition="bottom-right"
             />
             <span className="text-lg font-medium">{option.label}</span>
           </div>
         )}
 
         {option.type === 'image-only' && option.imageUrl && (
-          <div className="flex flex-col items-center gap-2">
-            <img
+          <div className="relative w-full">
+            <ExpandableImage
               src={option.imageUrl}
               alt={showLabel ? option.label : 'Bird'}
-              className="w-24 h-24 object-cover rounded"
+              className="w-full h-full object-cover rounded-lg"
+              onExpand={() => setExpandedImage(option.imageUrl!)}
+              iconPosition="bottom-right"
             />
-            {showLabel && <span className="text-lg font-medium">{option.label}</span>}
+            {showLabel && (
+              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-center rounded-b-lg">
+                <span className="text-lg font-medium">{option.label}</span>
+              </div>
+            )}
           </div>
         )}
 
@@ -225,21 +241,23 @@ export function QuestionCard({
           </div>
         )}
 
-        {answered && isCorrectAnswer && (
+        {answered && isCorrectAnswer && !isImageOnly && (
           <span className="ml-2 text-green-600 font-bold">✓ Correct</span>
         )}
-        {answered && isSelected && !isCorrect && (
+        {answered && isSelected && !isCorrect && !isImageOnly && (
           <span className="ml-2 text-red-600 font-bold">✗ Wrong</span>
         )}
       </>
     );
 
     // Use conditional wrapper to allow audio buttons to work after answering
+    const containerPadding = isImageOnly ? 'p-0 overflow-hidden' : 'p-4';
+
     if (answered) {
       return (
         <div
           key={option.id}
-          className={`w-full p-4 border-2 rounded-lg transition-all cursor-default ${bgColor} ${borderColor}`}
+          className={`w-full ${containerPadding} border-2 rounded-lg transition-all cursor-default ${bgColor} ${borderColor}`}
         >
           {optionContent}
         </div>
@@ -250,7 +268,7 @@ export function QuestionCard({
       <button
         key={option.id}
         onClick={() => onAnswer(option.id)}
-        className={`w-full p-4 border-2 rounded-lg transition-all cursor-pointer ${bgColor} ${borderColor}`}
+        className={`w-full ${containerPadding} border-2 rounded-lg transition-all cursor-pointer ${bgColor} ${borderColor}`}
       >
         {optionContent}
       </button>
@@ -281,8 +299,16 @@ export function QuestionCard({
         </div>
 
         {/* Answer grid */}
-        <div className="w-full lg:w-96 grid grid-cols-2 gap-3">
-          {question.options.map(option => renderOption(option))}
+        <div className="w-full lg:w-96 flex gap-3">
+          {/* Left column */}
+          <div className="flex flex-col gap-3 flex-1">
+            {question.options.slice(0, 2).map(option => renderOption(option))}
+          </div>
+
+          {/* Right column */}
+          <div className="flex flex-col gap-3 flex-1">
+            {question.options.slice(2, 4).map(option => renderOption(option))}
+          </div>
         </div>
       </div>
 
@@ -302,6 +328,11 @@ export function QuestionCard({
           </a>
         </div>
       )}
+
+      <ImageModal
+        imageUrl={expandedImage}
+        onClose={() => setExpandedImage(null)}
+      />
     </div>
   );
 }
