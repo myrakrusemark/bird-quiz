@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a **multi-modal bird identification quiz application** combining:
 - **React + TypeScript frontend** with Vite build system
-- **Python data collection pipeline** that aggregates bird data from Xeno-canto (audio) and Wikipedia (photos/descriptions)
-- **20 common North American birds** with photos, audio recordings, spectrograms, and metadata
+- **Python data collection pipeline** that aggregates bird data from Xeno-canto (audio), iNaturalist (photos), and Wikipedia (descriptions)
+- **20 common North American birds** with photos, audio recordings, and metadata
 - **localStorage-based progress tracking** with rolling accuracy statistics
 
 The app runs entirely client-side with no backend, using a static JSON dataset with cached media files.
@@ -129,9 +129,8 @@ Two independent tracking systems stored in localStorage:
 bird-dataset/
 ├── data/
 │   ├── birds.json                 # Main dataset (20 species with metadata)
-│   ├── photos/                    # Cached bird photographs
-│   ├── audio/                     # Cached MP3 recordings
-│   └── spectrograms/              # Spectrogram PNG images
+│   ├── photos/                    # Cached bird photographs (from iNaturalist)
+│   └── audio/                     # Cached MP3 recordings (from Xeno-canto)
 │
 ├── scripts/                       # Python data collection pipeline
 │   ├── fetch_birds.py            # Main collection script
@@ -230,10 +229,11 @@ Recent features:
 
 ## Data Sources and Attribution
 
-- **Audio & Spectrograms**: Xeno-canto (xeno-canto.org) - CC BY-NC-SA licensed
-- **Photos & Descriptions**: Wikimedia Commons & Wikipedia - CC BY-SA licensed
-- All media includes attribution metadata (recordist, date, location, license)
-- App displays recording metadata to respect Creative Commons requirements
+- **Audio**: Xeno-canto (xeno-canto.org) - CC BY-NC-SA licensed
+- **Photos**: iNaturalist (inaturalist.org) - CC BY-NC/CC BY-NC-SA licensed (research-grade observations)
+- **Descriptions**: Wikipedia - CC BY-SA licensed
+- All media includes attribution metadata (photographer/recordist, date, location, license)
+- App displays metadata to respect Creative Commons requirements
 
 ## Development Notes
 

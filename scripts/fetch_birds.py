@@ -24,9 +24,13 @@ from config import (
     DATA_DIR, PHOTOS_DIR, AUDIO_DIR, SPECTROGRAMS_DIR, DATASET_FILE,
     QUALITY_FILTER, MAX_RECORDINGS_PER_SPECIES, MIN_RECORDINGS_PER_SPECIES,
     MAX_PHOTOS_PER_SPECIES, MIN_PHOTOS_PER_SPECIES,
-    REQUEST_TIMEOUT, MAX_RETRIES, RETRY_DELAY, USER_AGENT
+    REQUEST_TIMEOUT, MAX_RETRIES, RETRY_DELAY, USER_AGENT, LOG_LEVEL
 )
 from species_list import SPECIES_LIST
+from logger import setup_logger
+
+# Setup logger for this module
+logger = setup_logger(__name__, log_level=LOG_LEVEL)
 
 
 def fetch_xeno_canto_recordings(genus: str, species: str, limit: int = MAX_RECORDINGS_PER_SPECIES) -> List[Dict]:
@@ -49,7 +53,7 @@ def fetch_xeno_canto_recordings(genus: str, species: str, limit: int = MAX_RECOR
     }
     headers = {"User-Agent": USER_AGENT}
 
-    print(f"  Fetching recordings from Xeno-canto for {genus} {species}...")
+    logger.info(f"Fetching recordings from Xeno-canto for {genus} {species}...")
 
     for attempt in range(MAX_RETRIES):
         try:
@@ -68,18 +72,20 @@ def fetch_xeno_canto_recordings(genus: str, species: str, limit: int = MAX_RECOR
                 if QUALITY_FILTER:
                     recordings = [r for r in recordings if r.get("q") in QUALITY_FILTER]
 
-                print(f"  Found {len(recordings)} recordings (quality filtered)")
+                logger.info(f"Found {len(recordings)} recordings (quality filtered)")
                 return recordings[:limit]
             else:
-                print(f"  Warning: No recordings found in response")
+                logger.warning(f"No recordings found in response for {genus} {species}")
                 return []
 
         except requests.exceptions.RequestException as e:
-            print(f"  Error fetching recordings (attempt {attempt + 1}/{MAX_RETRIES}): {e}")
+            logger.error(f"Error fetching recordings (attempt {attempt + 1}/{MAX_RETRIES}): {e}")
             if attempt < MAX_RETRIES - 1:
-                time.sleep(RETRY_DELAY * (2 ** attempt))  # Exponential backoff
+                delay = RETRY_DELAY * (2 ** attempt)
+                logger.debug(f"Retrying in {delay} seconds...")
+                time.sleep(delay)  # Exponential backoff
             else:
-                print(f"  Failed to fetch recordings after {MAX_RETRIES} attempts")
+                logger.error(f"Failed to fetch recordings after {MAX_RETRIES} attempts")
                 return []
 
     return []
@@ -460,9 +466,9 @@ def build_dataset(test_mode: bool = False, test_count: int = 3):
         test_mode: If True, only process first few species for testing
         test_count: Number of species to process in test mode
     """
-    print("\n" + "="*60)
-    print("BIRD DATASET COLLECTION")
-    print("="*60)
+    logger.info("=" * 60)
+    logger.info("BIRD DATASET COLLECTION")
+    logger.info("=" * 60)
 
     # Ensure directories exist
     PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
@@ -473,9 +479,9 @@ def build_dataset(test_mode: bool = False, test_count: int = 3):
     species_to_process = SPECIES_LIST[:test_count] if test_mode else SPECIES_LIST
 
     if test_mode:
-        print(f"\n⚠ TEST MODE: Processing only {test_count} species")
+        logger.warning(f"TEST MODE: Processing only {test_count} species")
     else:
-        print(f"\nProcessing all {len(species_to_process)} species")
+        logger.info(f"Processing all {len(species_to_process)} species")
 
     # Process each species
     all_species_data = []
@@ -491,7 +497,7 @@ def build_dataset(test_mode: bool = False, test_count: int = 3):
             else:
                 failed += 1
         except Exception as e:
-            print(f"\n✗ Error processing {species_info['commonName']}: {e}")
+            logger.exception(f"Error processing {species_info['commonName']}: {e}")
             failed += 1
 
     # Build final dataset structure
@@ -507,26 +513,28 @@ def build_dataset(test_mode: bool = False, test_count: int = 3):
     }
 
     # Save to JSON file
-    print(f"\n{'='*60}")
-    print("Saving dataset to JSON...")
-    print(f"{'='*60}")
+    logger.info("=" * 60)
+    logger.info("Saving dataset to JSON...")
+    logger.info("=" * 60)
 
     with open(DATASET_FILE, 'w', encoding='utf-8') as f:
         json.dump(dataset, f, indent=2, ensure_ascii=False)
 
-    print(f"✓ Dataset saved to {DATASET_FILE}")
+    logger.info(f"Dataset saved to {DATASET_FILE}")
 
     # Print summary
-    print(f"\n{'='*60}")
-    print("COLLECTION SUMMARY")
-    print(f"{'='*60}")
-    print(f"Successful: {successful} species")
-    print(f"Failed: {failed} species")
-    print(f"\nTotal recordings: {sum(s['stats']['totalRecordings'] for s in all_species_data)}")
-    print(f"Total photos: {sum(s['stats']['totalPhotos'] for s in all_species_data)}")
-    print(f"\nDataset file: {DATASET_FILE}")
-    print(f"Media files saved to: {DATA_DIR}/")
-    print("="*60 + "\n")
+    logger.info("=" * 60)
+    logger.info("COLLECTION SUMMARY")
+    logger.info("=" * 60)
+    logger.info(f"Successful: {successful} species")
+    logger.info(f"Failed: {failed} species")
+    total_recordings = sum(s['stats']['totalRecordings'] for s in all_species_data)
+    total_photos = sum(s['stats']['totalPhotos'] for s in all_species_data)
+    logger.info(f"Total recordings: {total_recordings}")
+    logger.info(f"Total photos: {total_photos}")
+    logger.info(f"Dataset file: {DATASET_FILE}")
+    logger.info(f"Media files saved to: {DATA_DIR}/")
+    logger.info("=" * 60)
 
 
 if __name__ == "__main__":

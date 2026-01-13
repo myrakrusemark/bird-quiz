@@ -1,7 +1,13 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import type { Question, QuestionOption } from '@/types/bird';
 import { ExpandableImage } from './ExpandableImage';
 import { ImageModal } from './ImageModal';
+import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+
+// Extend HTMLAudioElement to store event handler reference
+interface AudioWithHandler extends HTMLAudioElement {
+  __endedHandler?: () => void;
+}
 
 interface QuestionCardProps {
   question: Question;
@@ -18,50 +24,49 @@ export function QuestionCard({
   isCorrect,
   selectedAnswer,
 }: QuestionCardProps) {
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  // Determine which audio URL to use for main question audio
+  const mainAudioUrl = useMemo(() => {
+    if (question.mediaType === 'audio') {
+      return question.mediaUrl;
+    } else if (question.secondaryMediaUrl) {
+      return question.secondaryMediaUrl;
+    }
+    return null;
+  }, [question.mediaType, question.mediaUrl, question.secondaryMediaUrl]);
 
-  // Track all option audio instances
-  const optionAudioRefs = useRef<Map<string, HTMLAudioElement>>(new Map());
+  // Use the new useAudioPlayer hook for main question audio
+  const mainAudio = useAudioPlayer({ src: mainAudioUrl || null });
+
+  // Track all option audio instances (map of audioUrl -> audio player)
+  const optionAudios = useRef<Map<string, AudioWithHandler>>(new Map());
   const [audioPlaying, setAudioPlaying] = useState<Record<string, boolean>>({});
 
   // Track expanded image for modal
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
 
-  // Cleanup all audio on component unmount or question change
+  // Cleanup option audio instances when question changes
   useEffect(() => {
-    // Reset isPlaying state immediately when question changes
-    setIsPlaying(false);
+    // Capture current ref value at effect creation time
+    const audiosToCleanup = optionAudios.current;
 
     return () => {
-      // Stop main question audio
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
+      // Stop and clean up all option audio instances
+      audiosToCleanup.forEach((audio) => {
+        // Remove event listener if it exists
+        if (audio.__endedHandler) {
+          audio.removeEventListener('ended', audio.__endedHandler);
+          delete audio.__endedHandler;
+        }
 
-      // Stop all option audio instances
-      optionAudioRefs.current.forEach(audio => {
+        // Stop playback and clear source
         audio.pause();
         audio.currentTime = 0;
+        audio.src = '';
       });
-      optionAudioRefs.current.clear();
+      audiosToCleanup.clear();
       setAudioPlaying({});
     };
   }, [question.id]);
-
-  const handlePlayAudio = () => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-        setIsPlaying(false);
-      } else {
-        audioRef.current.play();
-        setIsPlaying(true);
-      }
-    }
-  };
 
   const renderMedia = () => {
     // Handle photo + audio combined
@@ -79,18 +84,11 @@ export function QuestionCard({
 
           {/* Audio player */}
           <div className="w-full max-w-md text-center">
-            <audio
-              ref={audioRef}
-              src={question.secondaryMediaUrl}
-              onEnded={() => setIsPlaying(false)}
-              onPause={() => setIsPlaying(false)}
-              onPlay={() => setIsPlaying(true)}
-            />
             <button
-              onClick={handlePlayAudio}
+              onClick={mainAudio.toggle}
               className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg transition-all transform hover:scale-105"
             >
-              {isPlaying ? '⏹️ Stop' : '▶️ Play Bird Call'}
+              {mainAudio.isPlaying ? '⏹️ Stop' : '▶️ Play Bird Call'}
             </button>
           </div>
         </div>
@@ -116,18 +114,11 @@ export function QuestionCard({
       case 'audio':
         return (
           <div className="mb-6 text-center">
-            <audio
-              ref={audioRef}
-              src={question.mediaUrl}
-              onEnded={() => setIsPlaying(false)}
-              onPause={() => setIsPlaying(false)}
-              onPlay={() => setIsPlaying(true)}
-            />
             <button
-              onClick={handlePlayAudio}
+              onClick={mainAudio.toggle}
               className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg transition-all transform hover:scale-105"
             >
-              {isPlaying ? '⏹️ Stop' : '▶️ Play Bird Call'}
+              {mainAudio.isPlaying ? '⏹️ Stop' : '▶️ Play Bird Call'}
             </button>
           </div>
         );
@@ -160,15 +151,20 @@ export function QuestionCard({
     }
 
     const handleOptionAudioPlay = (optionId: string, audioUrl: string) => {
-      let audio = optionAudioRefs.current.get(optionId);
+      let audio = optionAudios.current.get(optionId);
 
       if (!audio) {
-        audio = new Audio(audioUrl);
-        optionAudioRefs.current.set(optionId, audio);
+        audio = new Audio(audioUrl) as AudioWithHandler;
+        optionAudios.current.set(optionId, audio);
 
-        audio.addEventListener('ended', () => {
+        // Create event handler and store it so we can remove it later
+        const endedHandler = () => {
           setAudioPlaying(prev => ({ ...prev, [optionId]: false }));
-        });
+        };
+
+        // Store the handler on the audio element for later removal
+        audio.__endedHandler = endedHandler;
+        audio.addEventListener('ended', endedHandler);
       }
 
       if (audioPlaying[optionId]) {
@@ -177,7 +173,7 @@ export function QuestionCard({
         setAudioPlaying(prev => ({ ...prev, [optionId]: false }));
       } else {
         // Stop all other option audio
-        optionAudioRefs.current.forEach((aud, id) => {
+        optionAudios.current.forEach((aud, id) => {
           if (id !== optionId) {
             aud.pause();
             aud.currentTime = 0;
@@ -185,7 +181,10 @@ export function QuestionCard({
         });
 
         setAudioPlaying({ [optionId]: true });
-        audio.play();
+        audio.play().catch((error) => {
+          console.error('Error playing option audio:', error);
+          setAudioPlaying(prev => ({ ...prev, [optionId]: false }));
+        });
       }
     };
 

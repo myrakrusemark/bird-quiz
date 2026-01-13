@@ -1,58 +1,51 @@
-import { useState } from 'react';
-import { useBirdData } from './hooks/useBirdData';
-import { useQuiz } from './hooks/useQuiz';
-import { useQuizSettings } from './hooks/useQuizSettings';
-import { useProgress } from './hooks/useProgress';
+import { useQuizContext } from './contexts/QuizContext';
+import { useToast } from './hooks/useToast';
 import { QuestionCard } from './components/QuestionCard';
 import { ProgressBar } from './components/ProgressBar';
 import { QuizSettings } from './components/QuizSettings';
+import { ToastContainer } from './components/Toast';
 
 function App() {
-  // Quiz settings
-  const { settings, updateSettings } = useQuizSettings();
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  // Toast notifications
+  const { toasts, removeToast } = useToast();
 
-  // Load random subset of birds for the quiz
-  const { birds, loading: birdsLoading } = useBirdData(20);
-
-  // Progress tracking
-  const { progress, recordAnswer, getRollingAccuracy } = useProgress();
-
-  // Quiz state
+  // Get everything from unified quiz context
   const {
-    state: quizState,
-    startQuiz,
+    state,
+    answerQuestion,
     nextQuestion,
-    checkAnswer,
-  } = useQuiz(settings);
+    updateSettings,
+    toggleSettingsModal,
+    rollingAccuracy,
+    currentStreak,
+    totalAnswers,
+    isLoading,
+    error,
+  } = useQuizContext();
 
-  const handleAnswer = (answerId: string) => {
-    checkAnswer(answerId);
-
-    // Record progress
-    if (quizState.currentQuestion) {
-      const isCorrect = answerId === quizState.currentQuestion.correctAnswer;
-      recordAnswer(
-        quizState.currentQuestion.bird.id,
-        quizState.mode,
-        isCorrect,
-        quizState.currentQuestion.questionType,
-        quizState.currentQuestion.answerFormat
-      );
-    }
-  };
-
-  const handleNext = () => {
-    nextQuestion(birds);
-  };
-
-  // Start quiz when birds finish loading
-  if (!quizState.currentQuestion && birds.length > 0) {
-    startQuiz(birds);
+  // Error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-6xl mb-4">🐦❌</div>
+          <p className="text-xl font-semibold text-red-600 mb-4">
+            Failed to load bird data
+          </p>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+          >
+            Reload Page
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Loading state
-  if (birdsLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -65,51 +58,56 @@ function App() {
 
   // Quiz in progress
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-4xl mx-auto">
-        <ProgressBar
-          rollingAccuracy={getRollingAccuracy()}
-          streak={progress.rollingStats.currentStreak}
-          totalAnswered={progress.rollingStats.totalAnswers}
-          answers={progress.rollingStats.answers}
-          onSettingsClick={() => setSettingsOpen(true)}
-        />
+    <>
+      {/* Toast notifications */}
+      <ToastContainer toasts={toasts} onClose={removeToast} />
 
-        {/* Settings Modal */}
-        <QuizSettings
-          settings={settings}
-          onSave={(newSettings) => {
-            updateSettings(newSettings);
-            setSettingsOpen(false);
-          }}
-          onCancel={() => setSettingsOpen(false)}
-          isOpen={settingsOpen}
-        />
+      <div className="min-h-screen p-6">
+        <div className="max-w-4xl mx-auto">
+          <ProgressBar
+            rollingAccuracy={rollingAccuracy}
+            streak={currentStreak}
+            totalAnswered={totalAnswers}
+            answers={state.progress.rollingStats.answers}
+            onSettingsClick={() => toggleSettingsModal(true)}
+          />
 
-        {quizState.currentQuestion && (
-          <>
-            <QuestionCard
-              question={quizState.currentQuestion}
-              onAnswer={handleAnswer}
-              answered={quizState.answered}
-              isCorrect={quizState.isCorrect}
-              selectedAnswer={quizState.selectedAnswer}
-            />
+          {/* Settings Modal */}
+          <QuizSettings
+            settings={state.settings}
+            onSave={(newSettings) => {
+              updateSettings(newSettings);
+              toggleSettingsModal(false);
+            }}
+            onCancel={() => toggleSettingsModal(false)}
+            isOpen={state.settingsOpen}
+          />
 
-            {quizState.answered && (
-              <div className="mt-6 text-center">
-                <button
-                  onClick={handleNext}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors shadow-lg"
-                >
-                  Next Question →
-                </button>
-              </div>
-            )}
-          </>
-        )}
+          {state.currentQuestion && (
+            <>
+              <QuestionCard
+                question={state.currentQuestion}
+                onAnswer={answerQuestion}
+                answered={state.answered}
+                isCorrect={state.isCorrect}
+                selectedAnswer={state.selectedAnswer}
+              />
+
+              {state.answered && (
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={nextQuestion}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors shadow-lg"
+                  >
+                    Next Question →
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
