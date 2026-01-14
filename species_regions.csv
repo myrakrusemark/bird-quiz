@@ -1,0 +1,59 @@
+Species ID,MO,WC,NE
+# Core widespread (all 3 regions) - reduced to 11 species
+american-crow,1,1,1
+american-robin,1,1,1
+mourning-dove,1,1,1
+song-sparrow,1,1,1
+dark-eyed-junco,1,1,1
+chipping-sparrow,1,1,1
+european-starling,1,1,1
+killdeer,1,1,1
+rock-pigeon,1,1,1
+mallard,1,1,1
+canada-goose,1,1,1
+# Core but not in Missouri (remove 2 from MO)
+black-capped-chickadee,0,1,1
+barn-swallow,0,1,1
+# Core but not in West Coast (remove 4 from WC)
+house-sparrow,1,0,1
+brown-headed-cowbird,1,0,1
+red-tailed-hawk,1,0,1
+great-blue-heron,1,0,1
+# Missouri: 6 more specialists (17+6=23)
+baltimore-oriole,1,0,0
+carolina-wren,1,0,0
+common-grackle,1,0,0
+eastern-bluebird,1,0,0
+northern-mockingbird,1,0,0
+indigo-bunting,1,0,0
+# Missouri + New England: 7 species (brings MO to 30, NE to 24)
+american-goldfinch,1,0,1
+blue-jay,1,0,1
+downy-woodpecker,1,0,1
+northern-cardinal,1,0,1
+red-winged-blackbird,1,0,1
+tufted-titmouse,1,0,1
+white-breasted-nuthatch,1,0,1
+# West Coast: 8 more specialists (17+8=25)
+stellers-jay,0,1,0
+california-scrub-jay,0,1,0
+california-towhee,0,1,0
+annas-hummingbird,0,1,0
+black-phoebe,0,1,0
+western-bluebird,0,1,0
+spotted-towhee,0,1,0
+bushtit,0,1,0
+# Missouri only (keep house-finch and cedar-waxwing in MO only, remove from WC)
+house-finch,1,0,0
+cedar-waxwing,1,0,0
+# West Coast only (american-kestrel, tree-swallow, ruby-crowned-kinglet move to WC only)
+american-kestrel,0,1,0
+tree-swallow,0,1,0
+ruby-crowned-kinglet,0,1,0
+# West Coast + New England: 6 species
+common-raven,0,1,1
+ring-billed-gull,0,1,1
+yellow-rumped-warbler,0,1,1
+red-breasted-nuthatch,0,1,1
+golden-crowned-kinglet,0,1,1
+winter-wren,0,1,1

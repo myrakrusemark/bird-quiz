@@ -1,0 +1,63 @@
+Species ID,Common Name,Scientific Name,Genus,Species,MO,WC,NE,Difficulty,Xeno-canto Check,iNaturalist Check,Wikipedia,Priority,Notes,Status
+dark-eyed-junco,Dark-eyed Junco,Junco hyemalis,Junco,hyemalis,1,1,1,Easy,Good,Abundant,Yes,High,Widespread winter resident/migrant,READY
+chipping-sparrow,Chipping Sparrow,Spizella passerina,Spizella,passerina,1,1,1,Medium,Good,Abundant,Yes,High,Common summer resident all regions,READY
+european-starling,European Starling,Sturnus vulgaris,Sturnus,vulgaris,1,1,1,Easy,Good,Abundant,Yes,High,Introduced; 93M population; year-round,READY
+killdeer,Killdeer,Charadrius vociferus,Charadrius,vociferus,1,1,1,Easy,Good,Abundant,Yes,High,Common shorebird in open areas,READY
+rock-pigeon,Rock Pigeon,Columba livia,Columba,livia,1,1,1,Easy,Good,Abundant,Yes,High,Introduced; ubiquitous in cities,READY
+common-raven,Common Raven,Corvus corax,Corvus,corax,1,1,1,Medium,Good,Good,Yes,High,Large corvid; expanding range,READY
+brown-headed-cowbird,Brown-headed Cowbird,Molothrus ater,Molothrus,ater,1,1,1,Medium,Good,Abundant,Yes,High,Brood parasite; widespread,READY
+american-kestrel,American Kestrel,Falco sparverius,Falco,sparverius,1,1,1,Medium,Good,Good,Yes,High,Small falcon; open country,READY
+red-tailed-hawk,Red-tailed Hawk,Buteo jamaicensis,Buteo,jamaicensis,1,1,1,Medium,Good,Abundant,Yes,High,Most common hawk in NA,READY
+great-blue-heron,Great Blue Heron,Ardea herodias,Ardea,herodias,1,1,1,Easy,Good,Abundant,Yes,High,Large wading bird; wetlands,READY
+mallard,Mallard,Anas platyrhynchos,Anas,platyrhynchos,1,1,1,Easy,Good,Abundant,Yes,High,Most common duck,READY
+canada-goose,Canada Goose,Branta canadensis,Branta,canadensis,1,1,1,Easy,Good,Abundant,Yes,High,Ubiquitous goose; year-round/migrant,READY
+ring-billed-gull,Ring-billed Gull,Larus delawarensis,Larus,delawarensis,1,1,1,Medium,Good,Abundant,Yes,High,Common gull; inland and coast,READY
+tree-swallow,Tree Swallow,Tachycineta bicolor,Tachycineta,bicolor,1,1,1,Medium,Good,Abundant,Yes,High,Aerial insectivore; cavity nester,READY
+barn-swallow,Barn Swallow,Hirundo rustica,Hirundo,rustica,1,1,1,Easy,Good,Abundant,Yes,High,Common around human structures,READY
+ruby-crowned-kinglet,Ruby-crowned Kinglet,Regulus calendula,Regulus,calendula,1,1,1,Medium,Good,Good,Yes,High,Tiny; loud song; winter/migrant,READY
+yellow-rumped-warbler,Yellow-rumped Warbler,Setophaga coronata,Setophaga,coronata,1,1,1,Medium,Good,Abundant,Yes,High,Abundant migrant/winter resident,READY
+indigo-bunting,Indigo Bunting,Passerina cyanea,Passerina,cyanea,1,0,0,Easy,Good,Good,Yes,High,Brilliant blue; MO fields/edges,READY
+dickcissel,Dickcissel,Spiza americana,Spiza,americana,1,0,0,Medium,Good,Good,Yes,High,Grassland specialist; Midwest,READY
+field-sparrow,Field Sparrow,Spizella pusilla,Spizella,pusilla,1,0,1,Medium,Good,Good,Yes,High,Pink bill; bouncing-ball song,READY
+eastern-towhee,Eastern Towhee,Pipilo erythrophthalmus,Pipilo,erythrophthalmus,1,0,1,Medium,Good,Good,Yes,High,Drink-your-tea call,READY
+brown-thrasher,Brown Thrasher,Toxostoma rufum,Toxostoma,rufum,1,0,1,Medium,Good,Good,Yes,High,Long tail; extensive song repertoire,READY
+red-headed-woodpecker,Red-headed Woodpecker,Melanerpes erythrocephalus,Melanerpes,erythrocephalus,1,0,0,Easy,Good,Good,Yes,High,Striking tricolor pattern,READY
+eastern-phoebe,Eastern Phoebe,Sayornis phoebe,Sayornis,phoebe,1,0,1,Medium,Good,Good,Yes,High,Tail-bobbing flycatcher,READY
+eastern-kingbird,Eastern Kingbird,Tyrannus tyrannus,Tyrannus,tyrannus,1,0,1,Medium,Good,Good,Yes,High,Aggressive flycatcher,READY
+orchard-oriole,Orchard Oriole,Icterus spurius,Icterus,spurius,1,0,0,Medium,Good,Good,Yes,High,Smaller oriole; chestnut/black,READY
+blue-grosbeak,Blue Grosbeak,Passerina caerulea,Passerina,caerulea,1,0,0,Medium,Good,Good,Yes,High,Large finch; rusty wing bars,READY
+wild-turkey,Wild Turkey,Meleagris gallopavo,Meleagris,gallopavo,1,0,0,Easy,Good,Abundant,Yes,High,Large game bird; expanding range,READY
+great-crested-flycatcher,Great Crested Flycatcher,Myiarchus crinitus,Myiarchus,crinitus,1,0,1,Medium,Good,Good,Yes,High,Cavity nester; wheep call,READY
+stellers-jay,Steller's Jay,Cyanocitta stelleri,Cyanocitta,stelleri,0,1,0,Easy,Good,Abundant,Yes,High,Dark blue; Pacific Northwest icon,READY
+california-scrub-jay,California Scrub-Jay,Aphelocoma californica,Aphelocoma,californica,0,1,0,Easy,Good,Abundant,Yes,High,Blue/gray; CA endemic,READY
+california-towhee,California Towhee,Melozone crissalis,Melozone,crissalis,0,1,0,Easy,Good,Good,Yes,High,Plain brown; CA/OR endemic,READY
+annas-hummingbird,Anna's Hummingbird,Calypte anna,Calypte,anna,0,1,0,Easy,Good,Abundant,Yes,High,Year-round resident; rose gorget,READY
+black-phoebe,Black Phoebe,Sayornis nigricans,Sayornis,nigricans,0,1,0,Easy,Good,Good,Yes,High,Black/white; near water,READY
+western-bluebird,Western Bluebird,Sialia mexicana,Sialia,mexicana,0,1,0,Easy,Good,Good,Yes,High,Blue/rusty breast,READY
+spotted-towhee,Spotted Towhee,Pipilo maculatus,Pipilo,maculatus,0,1,0,Medium,Good,Good,Yes,High,Black head; white spots,READY
+bushtit,Bushtit,Psaltriparus minimus,Psaltriparus,minimus,0,1,0,Medium,Good,Good,Yes,High,Tiny; long tail; flocks,READY
+bewicks-wren,Bewick's Wren,Thryomanes bewickii,Thryomanes,bewickii,0,1,0,Medium,Good,Good,Yes,High,White eyebrow; declining east,READY
+common-loon,Common Loon,Gavia immer,Gavia,immer,0,0,1,Easy,Good,Abundant,Yes,High,Iconic northern lake bird,READY
+hermit-thrush,Hermit Thrush,Catharus guttatus,Catharus,guttatus,0,0,1,Medium,Good,Good,Yes,High,VT state bird; beautiful song,READY
+purple-finch,Purple Finch,Haemorhous purpureus,Haemorhous,purpureus,0,0,1,Medium,Good,Good,Yes,High,Raspberry wash; House Finch confusion,READY
+pine-warbler,Pine Warbler,Setophaga pinus,Setophaga,pinus,0,0,1,Medium,Good,Good,Yes,High,Pine forest specialist,READY
+pileated-woodpecker,Pileated Woodpecker,Dryocopus pileatus,Dryocopus,pileatus,0,0,1,Easy,Good,Good,Yes,High,Crow-sized; red crest,READY
+wood-thrush,Wood Thrush,Hylocichla mustelina,Hylocichla,mustelina,1,0,1,Medium,Good,Good,Yes,High,Flute-like song; declining,READY
+veery,Veery,Catharus fuscescens,Catharus,fuscescens,1,0,1,Medium,Good,Good,Yes,High,Cinnamon thrush; descending song,READY
+yellow-bellied-sapsucker,Yellow-bellied Sapsucker,Sphyrapicus varius,Sphyrapicus,varius,1,0,1,Medium,Good,Good,Yes,High,Drills sap wells,READY
+black-throated-green-warbler,Black-throated Green Warbler,Setophaga virens,Setophaga,virens,0,0,1,Medium,Good,Good,Yes,High,Zoo-zee-zoo-zoo-zee song,READY
+ruby-throated-hummingbird,Ruby-throated Hummingbird,Archilochus colubris,Archilochus,colubris,1,0,1,Easy,Good,Abundant,Yes,High,Only eastern hummer,READY
+scarlet-tanager,Scarlet Tanager,Piranga olivacea,Piranga,olivacea,1,0,1,Easy,Good,Good,Yes,High,Brilliant red; black wings,READY
+rose-breasted-grosbeak,Rose-breasted Grosbeak,Pheucticus ludovicianus,Pheucticus,ludovicianus,1,0,1,Easy,Good,Good,Yes,High,Rose triangle; robin-like song,READY
+ovenbird,Ovenbird,Seiurus aurocapilla,Seiurus,aurocapilla,1,0,1,Medium,Good,Good,Yes,High,Teacher-teacher-teacher call,READY
+red-eyed-vireo,Red-eyed Vireo,Vireo olivaceus,Vireo,olivaceus,1,0,1,Medium,Good,Good,Yes,High,Persistent singer; canopy,READY
+western-kingbird,Western Kingbird,Tyrannus verticalis,Tyrannus,verticalis,1,1,0,Medium,Good,Good,Yes,High,Yellow belly; open country,READY
+western-meadowlark,Western Meadowlark,Sturnella neglecta,Sturnella,neglecta,1,1,0,Easy,Good,Good,Yes,High,State bird of 6 states,READY
+bullocks-oriole,Bullock's Oriole,Icterus bullockii,Icterus,bullockii,1,1,0,Easy,Good,Good,Yes,High,Orange/black; western counterpart,READY
+says-phoebe,Say's Phoebe,Sayornis saya,Sayornis,saya,1,1,0,Medium,Good,Good,Yes,High,Rusty belly; open arid country,READY
+lazuli-bunting,Lazuli Bunting,Passerina amoena,Passerina,amoena,1,1,0,Easy,Good,Good,Yes,High,Turquoise; western Indigo,READY
+red-breasted-nuthatch,Red-breasted Nuthatch,Sitta canadensis,Sitta,canadensis,0,1,1,Easy,Good,Good,Yes,High,Nasal yank-yank; conifer specialist,READY
+golden-crowned-kinglet,Golden-crowned Kinglet,Regulus satrapa,Regulus,satrapa,0,1,1,Medium,Good,Good,Yes,High,Tiny; high-pitched tsee calls,READY
+winter-wren,Winter Wren,Troglodytes hiemalis,Troglodytes,hiemalis,0,1,1,Medium,Good,Good,Yes,High,Explosive song; mouse-like,READY
+fox-sparrow,Fox Sparrow,Passerella iliaca,Passerella,iliaca,0,1,1,Medium,Good,Good,Yes,High,Large sparrow; rusty coloration,READY
+varied-thrush,Varied Thrush,Ixoreus naevius,Ixoreus,naevius,0,1,1,Medium,Good,Good,Yes,High,Orange eyebrow; NW specialty,READY
