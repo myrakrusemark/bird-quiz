@@ -16,7 +16,7 @@ from modules.inaturalist import iNaturalistClient
 from modules.downloader import Downloader
 from modules.cache import Cache
 from config import (
-    DATA_DIR, PHOTOS_DIR, AUDIO_DIR, DATASET_FILE, get_dataset_file,
+    DATA_DIR, PHOTOS_DIR, AUDIO_DIR, DATASET_FILE,
     CACHE_DIR, CACHE_EXPIRY_DAYS,
     MIN_RECORDINGS_PER_SPECIES, MIN_PHOTOS_PER_SPECIES
 )
@@ -27,19 +27,17 @@ logger = get_logger(__name__)
 class DatasetBuilder:
     """Builds the bird dataset by collecting data from multiple sources"""
 
-    def __init__(self, use_cache: bool = True, region: str = 'missouri'):
+    def __init__(self, use_cache: bool = True):
         """
         Initialize dataset builder.
 
         Args:
             use_cache: Whether to use caching for API responses
-            region: Region identifier for output file naming
         """
         self.xeno_canto = XenoCantoClient()
         self.wikipedia = WikipediaClient()
         self.inaturalist = iNaturalistClient()
         self.downloader = Downloader()
-        self.region = region
 
         # Initialize cache
         self.use_cache = use_cache
@@ -58,14 +56,13 @@ class DatasetBuilder:
         Process a single bird species and collect all data.
 
         Args:
-            species_info: Dict[str, Any]ionary with species metadata
+            species_info: Dictionary with species metadata
                 {
                     'id': str,
                     'commonName': str,
                     'scientificName': str,
                     'genus': str,
-                    'species': str,
-                    'region': str
+                    'species': str
                 }
 
         Returns:
@@ -86,7 +83,6 @@ class DatasetBuilder:
             "id": species_id,
             "commonName": common_name,
             "scientificName": scientific_name,
-            "region": species_info.get('region', 'North America'),
             "description": "",
             "photos": [],
             "recordings": [],
@@ -279,7 +275,7 @@ class DatasetBuilder:
 
         # Load existing dataset if it exists
         existing_species_map = {}
-        dataset_file = get_dataset_file(self.region)
+        dataset_file = DATASET_FILE
         if dataset_file.exists():
             try:
                 with open(dataset_file, 'r', encoding='utf-8') as f:
@@ -298,18 +294,19 @@ class DatasetBuilder:
         # Build final dataset structure with merged data
         merged_species = list(existing_species_map.values())
 
-        # Format region name for display (e.g., "west-coast" -> "West Coast")
-        region_display = self.region.replace('-', ' ').title()
-
         dataset = {
             "species": merged_species,
             "metadata": {
-                "version": "1.0",
-                "created": datetime.now().strftime("%Y-%m-%d"),
+                "version": "2.0.0",
+                "created": datetime.now().isoformat(),
                 "totalSpecies": len(merged_species),
-                "region": region_display,
-                "dataSources": ["xeno-canto", "wikipedia", "inaturalist"],
-                "testMode": test_mode
+                "dataSources": [
+                    "Xeno-canto (audio recordings)",
+                    "iNaturalist (research-grade photos)",
+                    "Wikipedia (descriptions)"
+                ],
+                "testMode": test_mode,
+                "note": "Region-agnostic dataset. See regions.json for regional mappings."
             }
         }
 

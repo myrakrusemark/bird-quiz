@@ -33,7 +33,6 @@ export interface Bird {
   id: string;
   commonName: string;
   scientificName: string;
-  region: string;
   description: string;
   photos: BirdPhoto[];
   recordings: BirdRecording[];
@@ -46,9 +45,9 @@ export interface BirdDataset {
     version: string;
     created: string;
     totalSpecies: number;
-    region: string;
     dataSources: string[];
     testMode?: boolean;
+    note?: string;
   };
 }
 
@@ -57,9 +56,9 @@ export interface RegionConfig {
   id: string;
   name: string;
   displayName: string;
-  datasetFile: string;
   backgroundImage: string;
   description: string;
+  species: string[];
 }
 
 export interface RegionsConfig {

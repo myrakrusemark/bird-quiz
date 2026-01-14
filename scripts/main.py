@@ -7,14 +7,12 @@ Fetches bird photos, audio recordings, spectrograms, and metadata from:
 - Wikipedia (descriptions)
 - iNaturalist (photos)
 
-Outputs a complete JSON dataset with cached media files.
+Outputs a unified JSON dataset with cached media files.
 
 Usage:
-    python main.py --region missouri      # Collect Missouri birds
-    python main.py --region west-coast    # Collect West Coast birds
-    python main.py --region new-england   # Collect New England birds
-    python main.py --test                 # Test mode (3 species)
-    python main.py --help                 # Show help
+    python main.py              # Collect all birds
+    python main.py --test       # Test mode (3 species)
+    python main.py --help       # Show help
 """
 
 import sys
@@ -27,18 +25,17 @@ sys.path.insert(0, str(Path(__file__).parent))
 from logger import setup_logger
 from config import LOG_LEVEL
 from modules.builder import DatasetBuilder
+from species_list import SPECIES_LIST
 
 
 def parse_arguments() -> argparse.Namespace:
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(
-        description="Collect bird dataset from Xeno-canto, Wikipedia, and Wikimedia Commons",
+        description="Collect bird dataset from Xeno-canto, Wikipedia, and iNaturalist",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python main.py --region missouri      # Collect Missouri birds
-  python main.py --region west-coast    # Collect West Coast birds
-  python main.py --region new-england   # Collect New England birds
+  python main.py                        # Collect all birds
   python main.py --test                 # Test with 3 species
   python main.py --test 5               # Test with 5 species
   python main.py --verbose              # Show debug output
@@ -83,14 +80,6 @@ Get your free Xeno-canto API key at: https://xeno-canto.org/api/guide
         help='Clear all cached data before starting'
     )
 
-    parser.add_argument(
-        '--region', '-R',
-        type=str,
-        choices=['missouri', 'west-coast', 'new-england'],
-        default='missouri',
-        help='Region to collect data for (default: missouri)'
-    )
-
     return parser.parse_args()
 
 
@@ -102,28 +91,12 @@ def main() -> int:
     log_level = 'DEBUG' if args.verbose else LOG_LEVEL
     logger = setup_logger(__name__, log_level=log_level)
 
-    # Dynamic species list import based on region
-    region = args.region
-    region_module_map = {
-        'missouri': 'species_list_missouri',
-        'west-coast': 'species_list_west_coast',
-        'new-england': 'species_list_new_england'
-    }
-
-    module_name = region_module_map[region]
-    logger.info(f"Loading species list for region: {region}")
-
-    try:
-        species_module = __import__(module_name)
-        SPECIES_LIST = species_module.SPECIES_LIST
-    except ImportError as e:
-        logger.error(f"Failed to import species list for {region}: {e}")
-        return 1
+    logger.info(f"Loading unified species list ({len(SPECIES_LIST)} species)")
 
     try:
         # Create dataset builder
         use_cache = not args.no_cache
-        builder = DatasetBuilder(use_cache=use_cache, region=region)
+        builder = DatasetBuilder(use_cache=use_cache)
 
         # Clear cache if requested
         if args.clear_cache and builder.cache:

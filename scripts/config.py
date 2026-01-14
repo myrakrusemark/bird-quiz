@@ -32,20 +32,7 @@ PHOTOS_DIR = DATA_DIR / "photos"
 AUDIO_DIR = DATA_DIR / "audio"
 LOGS_DIR = DATA_DIR / "logs"
 CACHE_DIR = DATA_DIR / ".cache"
-DATASET_FILE = DATA_DIR / "birds.json"  # Legacy - use get_dataset_file(region) instead
-
-
-def get_dataset_file(region: str) -> Path:
-    """
-    Get dataset output file path for a specific region.
-
-    Args:
-        region: Region identifier (missouri, west-coast, new-england)
-
-    Returns:
-        Path to region-specific dataset JSON file
-    """
-    return DATA_DIR / f"birds-{region}.json"
+DATASET_FILE = DATA_DIR / "birds.json"
 
 
 # Collection settings

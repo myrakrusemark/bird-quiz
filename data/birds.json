@@ -4,7 +4,6 @@
       "id": "american-crow",
       "commonName": "American Crow",
       "scientificName": "American Crow",
-      "region": "Unknown",
       "description": "The American crow is a large passerine bird species of the family Corvidae. They are a common bird found throughout much of North America, only absent from the tundra biome. American crows are the New World counterpart to the carrion crow and the hooded crow of Eurasia, occupying similar ecological niches.",
       "photos": [
         {
@@ -242,7 +241,6 @@
       "id": "american-goldfinch",
       "commonName": "American Goldfinch",
       "scientificName": "American Goldfinch",
-      "region": "Unknown",
       "description": "The American goldfinch is a small North American bird in the finch family. It is migratory, ranging from mid-Alberta to North Carolina during the breeding season, and from just south of the Canada–United States border to Mexico during the winter.",
       "photos": [
         {
@@ -480,7 +478,6 @@
       "id": "american-robin",
       "commonName": "American Robin",
       "scientificName": "Turdus migratorius",
-      "region": "Missouri",
       "description": "The American robin is a migratory bird of the true thrush genus and Turdidae, the wider thrush family. It is named after the European robin because of its reddish-orange breast, though the two species are not closely related, with the European robin belonging to the Old World flycatcher family. The American robin is widely distributed throughout North America, wintering from southern Canada to central Mexico and along the Pacific coast.",
       "photos": [
         {
@@ -947,7 +944,6 @@
       "id": "baltimore-oriole",
       "commonName": "Baltimore Oriole",
       "scientificName": "Baltimore Oriole",
-      "region": "Unknown",
       "description": "The Baltimore oriole is a small icterid blackbird common in eastern North America as a migratory breeding bird. It received its name from the resemblance of the male's colors to those on the coat-of-arms of 17th-century Lord Baltimore. Observations of interbreeding between the Baltimore oriole and the western Bullock's oriole Icterus bullockii, led to both being classified as a single species, called the northern oriole, from 1973 to 1995. Research by James Rising, a professor of zoology at the University of Toronto, and others showed that the two birds actually did not interbreed significantly.",
       "photos": [
         {
@@ -1171,7 +1167,6 @@
       "id": "black-capped-chickadee",
       "commonName": "Black Capped Chickadee",
       "scientificName": "Black Capped Chickadee",
-      "region": "Unknown",
       "description": "",
       "photos": [
         {
@@ -1479,7 +1474,6 @@
       "id": "blue-jay",
       "commonName": "Blue Jay",
       "scientificName": "Cyanocitta cristata",
-      "region": "Missouri",
       "description": "The blue jay is a passerine bird in the family Corvidae, native to eastern North America. It lives in most of the eastern and central United States; some eastern populations may be migratory. Resident populations are also in Newfoundland, Canada; breeding populations are found across southern Canada. It breeds in both deciduous and coniferous forests, and is common in residential areas. Its coloration is predominantly blue, with a white chest and underparts, and a blue crest; it has a black, U-shaped collar around its neck and a black border behind the crest. Males and females are similar in size and plumage, which does not vary throughout the year. Four subspecies have been recognized.",
       "photos": [
         {
@@ -1960,7 +1954,6 @@
       "id": "carolina-wren",
       "commonName": "Carolina Wren",
       "scientificName": "Carolina Wren",
-      "region": "Unknown",
       "description": "The Carolina wren is a species of wren that is common in the Eastern United States, the extreme south of Ontario, Canada, and the extreme northeast of Mexico. Severe winters restrict the northern limits of their range, while favorable weather conditions lead to a northward extension of their breeding range. Their preferred habitat is in dense cover in forest, farm edges, and suburban areas. This wren is the state bird of South Carolina.",
       "photos": [
         {
@@ -2184,7 +2177,6 @@
       "id": "cedar-waxwing",
       "commonName": "Cedar Waxwing",
       "scientificName": "Cedar Waxwing",
-      "region": "Unknown",
       "description": "The cedar waxwing is a member of the family Bombycillidae or waxwing family of passerine birds. It is a medium-sized bird that is mainly brown, gray, and yellow. Some of the wing feathers have red tips which resemble sealing wax, giving these birds their common name. It is a native of North and Central America, breeding in open wooded areas in southern Canada and wintering in the southern half of the United States, Central America, and the far northwest of South America. Its diet includes cedar cones, fruit, holly berries, and insects. The cedar waxwing is listed as least concern on the IUCN Red List.",
       "photos": [
         {
@@ -2422,7 +2414,6 @@
       "id": "common-grackle",
       "commonName": "Common Grackle",
       "scientificName": "Common Grackle",
-      "region": "Unknown",
       "description": "The common grackle is an icterid bird found in large numbers through much of North America. It was first described in 1758 by Carl Linnaeus and has three officially recognized subspecies. Adult common grackles have a long and dark bill, pale yellow eyes, and a long tail. Adults often have a bluish iridescent appearance on their head, this feature being more pronounced on males. Common grackles can be found widely across North America east of the Rocky Mountains and are highly adaptable to their environment.",
       "photos": [
         {
@@ -2660,7 +2651,6 @@
       "id": "downy-woodpecker",
       "commonName": "Downy Woodpecker",
       "scientificName": "Downy Woodpecker",
-      "region": "Unknown",
       "description": "The downy woodpecker is a species of woodpecker, the smallest in North America. Length ranges from 14 to 18 cm. Downy woodpeckers primarily live in forested areas throughout the United States and Canada, with the exception of deserts in the southwest and the northern tundra. The bird nests in tree cavities and feeds primarily on insects, although it supplements its diet with seeds and berries. The downy woodpecker is very similar in appearance to the hairy woodpecker, although they are not closely related.",
       "photos": [
         {
@@ -2898,7 +2888,6 @@
       "id": "eastern-bluebird",
       "commonName": "Eastern Bluebird",
       "scientificName": "Sialia sialis",
-      "region": "Missouri",
       "description": "The eastern bluebird is a small North American migratory thrush found in open woodlands, farmlands, and orchards.",
       "photos": [
         {
@@ -3386,7 +3375,6 @@
       "id": "house-finch",
       "commonName": "House Finch",
       "scientificName": "House Finch",
-      "region": "Unknown",
       "description": "The house finch is a North American bird in the finch family. It is native to Mexico and southwestern United States, but has since been introduced to the eastern part of North America and Hawaiʻi; it is now found year-round in almost all parts of the United States and most of Mexico, with some residing near the border of Canada. There are estimated to be 40 million house finches across North America, making it the second-most populous finch, just behind the American goldfinch. The house finch and the other two American rosefinches are placed in the genus Haemorhous.",
       "photos": [
         {
@@ -3624,7 +3612,6 @@
       "id": "house-sparrow",
       "commonName": "House Sparrow",
       "scientificName": "House Sparrow",
-      "region": "Unknown",
       "description": "The house sparrow is a bird of the sparrow family Passeridae, found in most parts of the world. It is a small bird that has a typical length of 16 cm (6.3 in) and a mass of 24–39.5 g (0.85–1.39 oz). Females and young birds are coloured pale brown and grey, and males have brighter black, white, and brown markings. One of about 25 species in the genus Passer, the house sparrow is native to most of Europe, the Mediterranean Basin, and a large part of Asia. Its intentional or accidental introductions to many regions, including parts of Australasia, Africa, and the Americas, make it the most widely distributed wild bird.",
       "photos": [
         {
@@ -3862,7 +3849,6 @@
       "id": "mourning-dove",
       "commonName": "Mourning Dove",
       "scientificName": "Mourning Dove",
-      "region": "Unknown",
       "description": "The mourning dove is a member of the dove family, Columbidae. The bird is also known as the American mourning dove, the rain dove, the chueybird, and colloquially as the turtle dove, and it was once known as the Carolina pigeon and Carolina turtledove. It is one of the most abundant and widespread North American birds and a popular gamebird, with more than 20 million birds shot annually in the U.S., both for sport and meat. Its ability to sustain its population under such pressure is due to its prolific breeding; in warm areas, one pair may raise up to six broods of two young each in a single year. The wings make an unusual whistling sound upon take-off and landing, a form of sonation. The bird is a strong flier, capable of speeds up to 88 km/h (55 mph).",
       "photos": [
         {
@@ -4100,7 +4086,6 @@
       "id": "northern-cardinal",
       "commonName": "Northern Cardinal",
       "scientificName": "Cardinalis cardinalis",
-      "region": "Missouri",
       "description": "The northern cardinal, also commonly known as the common cardinal, red cardinal, or simply cardinal, is a bird in the genus Cardinalis. It can be found in southeastern Canada, through the eastern United States from Maine to Minnesota to Texas, New Mexico, southern Arizona, southern California and south through Mexico, Belize, and Guatemala. It is also an introduced species in a few locations such as Bermuda and all major islands of Hawaii since its introduction in 1929. Its habitat includes woodlands, gardens, shrublands, and wetlands. It is the state bird of Illinois, Indiana, Kentucky, North Carolina, Ohio, Virginia, and West Virginia.",
       "photos": [
         {
@@ -4609,7 +4594,6 @@
       "id": "northern-mockingbird",
       "commonName": "Northern Mockingbird",
       "scientificName": "Northern Mockingbird",
-      "region": "Unknown",
       "description": "The northern mockingbird is a mockingbird commonly found in North America, of the family Mimidae. The species is also found in some parts of the Caribbean, as well as on the Hawaiian Islands. It is typically a permanent resident across much of its range, but northern mockingbirds may move farther south during inclement weather or prior to the onset of winter. The northern mockingbird has gray to brown upper feathers and a paler belly. Its tail and wings have white patches which are visible in flight.",
       "photos": [
         {
@@ -4875,7 +4859,6 @@
       "id": "red-winged-blackbird",
       "commonName": "Red-winged Blackbird",
       "scientificName": "Agelaius phoeniceus",
-      "region": "Missouri",
       "description": "The red-winged blackbird is a passerine bird of the family Icteridae found in most of North America and much of Central America. It breeds from Alaska and Newfoundland south to Florida, the Gulf of Mexico, Mexico, and Guatemala, with isolated populations in western El Salvador, northwestern Honduras, and northwestern Costa Rica. It may winter as far north as Pennsylvania and British Columbia, but northern populations are generally migratory, moving south to Mexico and the Southern United States.",
       "photos": [
         {
@@ -5328,7 +5311,6 @@
       "id": "song-sparrow",
       "commonName": "Song Sparrow",
       "scientificName": "Song Sparrow",
-      "region": "Unknown",
       "description": "The song sparrow is a medium-sized New World sparrow. Among the native sparrows in North America, it is easily one of the most abundant, variable, and adaptable species.",
       "photos": [
         {
@@ -5566,7 +5548,6 @@
       "id": "tufted-titmouse",
       "commonName": "Tufted Titmouse",
       "scientificName": "Tufted Titmouse",
-      "region": "Unknown",
       "description": "The tufted titmouse is a small songbird native to eastern North America. The species belongs to the tit and chickadee family (Paridae). The black-crested titmouse, found from central and southern Texas southward, was included as a subspecies but now is considered a separate species, Baeolophus atricristatus.",
       "photos": [
         {
@@ -5839,7 +5820,6 @@
       "id": "white-breasted-nuthatch",
       "commonName": "White Breasted Nuthatch",
       "scientificName": "White Breasted Nuthatch",
-      "region": "Unknown",
       "description": "",
       "photos": [
         {
@@ -6089,16 +6069,14 @@
     }
   ],
   "metadata": {
-    "version": "1.0",
-    "created": "2026-01-13",
+    "version": "2.0.0",
+    "created": "2026-01-14T10:10:11.458001",
     "totalSpecies": 20,
-    "region": "Missouri",
     "dataSources": [
-      "xeno-canto",
-      "wikipedia",
-      "inaturalist"
+      "Xeno-canto (audio recordings)",
+      "iNaturalist (research-grade photos)",
+      "Wikipedia (descriptions)"
     ],
-    "rebuilt": true,
-    "note": "Rebuilt from existing media files"
+    "note": "Region-agnostic dataset. See regions.json for regional mappings."
   }
 }

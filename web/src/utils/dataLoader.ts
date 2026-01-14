@@ -1,55 +1,63 @@
-import type { Bird, BirdDataset, BirdRecording, BirdPhoto } from '@/types/bird';
+import type { Bird, BirdDataset, BirdRecording, BirdPhoto, RegionConfig } from '@/types/bird';
 
-// Cache for loaded data (one cache entry per region)
-const cachedDataByRegion = new Map<string, BirdDataset>();
+// Cache for loaded data (single unified dataset)
+let cachedBirdData: BirdDataset | null = null;
 
 /**
- * Load bird dataset for a specific region
- *
- * @param datasetFile - Filename of the dataset (e.g., "birds-missouri.json")
+ * Load unified bird dataset
  */
-export async function loadBirdData(datasetFile: string = 'birds-missouri.json'): Promise<BirdDataset> {
+export async function loadBirdData(): Promise<BirdDataset> {
   // Check cache first
-  if (cachedDataByRegion.has(datasetFile)) {
-    return cachedDataByRegion.get(datasetFile)!;
+  if (cachedBirdData) {
+    return cachedBirdData;
   }
 
   try {
-    const response = await fetch(`/data/${datasetFile}`);
+    const response = await fetch('/data/birds.json');
     if (!response.ok) {
       throw new Error(`Failed to load bird data: ${response.statusText}`);
     }
     const data: BirdDataset = await response.json();
 
     // Cache the loaded data
-    cachedDataByRegion.set(datasetFile, data);
+    cachedBirdData = data;
     return data;
   } catch (error) {
-    console.error(`Error loading bird data from ${datasetFile}:`, error);
+    console.error('Error loading bird data:', error);
     throw error;
   }
 }
 
 /**
- * Clear cached data for a specific region (useful when switching regions)
- *
- * @param datasetFile - Optional dataset file to clear. If not provided, clears all caches.
+ * Clear cached data (useful for forcing reload)
  */
-export function clearRegionCache(datasetFile?: string): void {
-  if (datasetFile) {
-    cachedDataByRegion.delete(datasetFile);
-  } else {
-    cachedDataByRegion.clear();
-  }
+export function clearCache(): void {
+  cachedBirdData = null;
 }
 
 /**
- * Get all bird species from a specific dataset
+ * Filter birds by region species list
  *
- * @param datasetFile - Optional dataset file. If not provided, uses default.
+ * @param birds - Array of all birds
+ * @param speciesIds - Array of species IDs to include
  */
-export async function getAllBirds(datasetFile?: string): Promise<Bird[]> {
-  const data = await loadBirdData(datasetFile || 'birds-missouri.json');
+export function filterBirdsByRegion(birds: Bird[], speciesIds: string[]): Bird[] {
+  const idSet = new Set(speciesIds);
+  return birds.filter(bird => idSet.has(bird.id));
+}
+
+/**
+ * Get all bird species, optionally filtered by region
+ *
+ * @param regionConfig - Optional region config. If provided, filters birds by region's species list.
+ */
+export async function getAllBirds(regionConfig?: RegionConfig): Promise<Bird[]> {
+  const data = await loadBirdData();
+
+  if (regionConfig && regionConfig.species) {
+    return filterBirdsByRegion(data.species, regionConfig.species);
+  }
+
   return data.species;
 }
 
@@ -57,10 +65,10 @@ export async function getAllBirds(datasetFile?: string): Promise<Bird[]> {
  * Get a random subset of birds
  *
  * @param count - Number of birds to return
- * @param datasetFile - Optional dataset file
+ * @param regionConfig - Optional region config
  */
-export async function getRandomBirds(count: number = 10, datasetFile?: string): Promise<Bird[]> {
-  const allBirds = await getAllBirds(datasetFile);
+export async function getRandomBirds(count: number = 10, regionConfig?: RegionConfig): Promise<Bird[]> {
+  const allBirds = await getAllBirds(regionConfig);
   return shuffleArray([...allBirds]).slice(0, count);
 }
 
@@ -68,10 +76,10 @@ export async function getRandomBirds(count: number = 10, datasetFile?: string): 
  * Get a specific bird by ID
  *
  * @param id - Bird ID to find
- * @param datasetFile - Optional dataset file
+ * @param regionConfig - Optional region config
  */
-export async function getBirdById(id: string, datasetFile?: string): Promise<Bird | undefined> {
-  const allBirds = await getAllBirds(datasetFile);
+export async function getBirdById(id: string, regionConfig?: RegionConfig): Promise<Bird | undefined> {
+  const allBirds = await getAllBirds(regionConfig);
   return allBirds.find(bird => bird.id === id);
 }
 

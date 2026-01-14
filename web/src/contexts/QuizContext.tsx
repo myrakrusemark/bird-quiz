@@ -9,7 +9,7 @@ import React, { createContext, useContext, useReducer, useEffect, useCallback, u
 import { quizReducer, initialQuizState, type QuizState } from '@/reducers/quizReducer';
 import type { QuizAction } from '@/types/actions';
 import type { QuizSettings } from '@/types/bird';
-import { getAllBirds, getRandomBirds } from '@/utils/dataLoader';
+import { getAllBirds } from '@/utils/dataLoader';
 import { loadRegionsConfig } from '@/utils/regionLoader';
 import {
   selectRollingAccuracy,
@@ -164,11 +164,13 @@ export function QuizProvider({ children, birdCount = QUIZ_CONFIG.DEFAULT_BIRD_CO
     dispatch({ type: 'LOAD_BIRDS_START' });
 
     try {
-      // Get current region's dataset file
-      const datasetFile = state.currentRegion?.datasetFile || 'birds-missouri.json';
+      // Load all birds for current region
+      const allBirds = await getAllBirds(state.currentRegion || undefined);
+
+      // Apply count limit if specified
       const birds = count
-        ? await getRandomBirds(count, datasetFile)
-        : await getAllBirds(datasetFile);
+        ? allBirds.slice(0, Math.min(count, allBirds.length))
+        : allBirds;
 
       dispatch({ type: 'LOAD_BIRDS_SUCCESS', payload: birds });
 

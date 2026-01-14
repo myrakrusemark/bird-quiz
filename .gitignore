@@ -2,7 +2,9 @@
 data/photos/
 data/audio/
 data/spectrograms/
-data/birds.json
+
+# Cache files
+data/.cache/
 
 # Python
 __pycache__/
