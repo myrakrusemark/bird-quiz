@@ -1,0 +1,29 @@
+{
+  "regions": [
+    {
+      "id": "missouri",
+      "name": "Missouri",
+      "displayName": "Missouri Birds",
+      "datasetFile": "birds-missouri.json",
+      "backgroundImage": "/assets/missouri-background.png",
+      "description": "Common backyard birds of Missouri"
+    },
+    {
+      "id": "west-coast",
+      "name": "West Coast",
+      "displayName": "West Coast Birds",
+      "datasetFile": "birds-west-coast.json",
+      "backgroundImage": "/assets/west-coast-background.png",
+      "description": "Common birds of the Pacific Coast"
+    },
+    {
+      "id": "new-england",
+      "name": "New England",
+      "displayName": "New England Birds",
+      "datasetFile": "birds-new-england.json",
+      "backgroundImage": "/assets/new-england-background.png",
+      "description": "Common birds of the Northeast"
+    }
+  ],
+  "defaultRegion": "missouri"
+}

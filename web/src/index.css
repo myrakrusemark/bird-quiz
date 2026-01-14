@@ -3,7 +3,7 @@
 @layer base {
   body {
     @apply min-h-screen;
-    background-image: url('/assets/background.png') !important;
+    background-image: var(--background-image, url('/assets/missouri-background.png')) !important;
     background-size: cover !important;
     background-position: center !important;
     background-repeat: no-repeat !important;

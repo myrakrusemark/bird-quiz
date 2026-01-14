@@ -10,6 +10,7 @@ import { quizReducer, initialQuizState, type QuizState } from '@/reducers/quizRe
 import type { QuizAction } from '@/types/actions';
 import type { QuizSettings } from '@/types/bird';
 import { getAllBirds, getRandomBirds } from '@/utils/dataLoader';
+import { loadRegionsConfig } from '@/utils/regionLoader';
 import {
   selectRollingAccuracy,
   selectCurrentStreak,
@@ -37,6 +38,7 @@ interface QuizContextValue {
   updateSettings: (settings: QuizSettings) => void;
   toggleSettingsModal: (open?: boolean) => void;
   resetQuiz: () => void;
+  changeRegion: (regionId: string) => void;
 
   // Memoized selectors
   rollingAccuracy: number;
@@ -123,17 +125,51 @@ export function QuizProvider({ children, birdCount = QUIZ_CONFIG.DEFAULT_BIRD_CO
     }
   }, [state.settings]);
 
-  // Load birds on mount
+  // Load regions on mount
   useEffect(() => {
-    loadBirds(birdCount);
-  }, [birdCount]); // eslint-disable-line react-hooks/exhaustive-deps
+    const loadRegions = async () => {
+      dispatch({ type: 'LOAD_REGIONS_START' });
+
+      try {
+        const config = await loadRegionsConfig();
+        dispatch({ type: 'LOAD_REGIONS_SUCCESS', payload: config });
+
+        // Load selected region from localStorage or use default
+        const savedRegionId = localStorage.getItem(STORAGE_KEYS.SELECTED_REGION);
+        const regionToLoad = savedRegionId
+          ? config.regions.find(r => r.id === savedRegionId)
+          : config.regions.find(r => r.id === config.defaultRegion);
+
+        if (regionToLoad) {
+          dispatch({ type: 'CHANGE_REGION', payload: regionToLoad });
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to load regions';
+        dispatch({ type: 'LOAD_REGIONS_ERROR', payload: errorMessage });
+      }
+    };
+
+    loadRegions();
+  }, []);
+
+  // Load birds when region changes
+  useEffect(() => {
+    if (state.currentRegion) {
+      loadBirds(birdCount);
+    }
+  }, [state.currentRegion?.id, birdCount]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Action creators
   const loadBirds = useCallback(async (count?: number) => {
     dispatch({ type: 'LOAD_BIRDS_START' });
 
     try {
-      const birds = count ? await getRandomBirds(count) : await getAllBirds();
+      // Get current region's dataset file
+      const datasetFile = state.currentRegion?.datasetFile || 'birds-missouri.json';
+      const birds = count
+        ? await getRandomBirds(count, datasetFile)
+        : await getAllBirds(datasetFile);
+
       dispatch({ type: 'LOAD_BIRDS_SUCCESS', payload: birds });
 
       // Auto-start quiz when birds are loaded
@@ -144,7 +180,7 @@ export function QuizProvider({ children, birdCount = QUIZ_CONFIG.DEFAULT_BIRD_CO
       const errorMessage = error instanceof Error ? error.message : 'Failed to load birds';
       dispatch({ type: 'LOAD_BIRDS_ERROR', payload: errorMessage });
     }
-  }, []);
+  }, [state.currentRegion]);
 
   const startQuiz = useCallback(() => {
     if (state.birds.length > 0) {
@@ -192,6 +228,16 @@ export function QuizProvider({ children, birdCount = QUIZ_CONFIG.DEFAULT_BIRD_CO
     dispatch({ type: 'RESET_QUIZ' });
   }, []);
 
+  const changeRegion = useCallback((regionId: string) => {
+    const region = state.availableRegions.find(r => r.id === regionId);
+    if (region) {
+      // Save to localStorage
+      localStorage.setItem(STORAGE_KEYS.SELECTED_REGION, regionId);
+      // Update state
+      dispatch({ type: 'CHANGE_REGION', payload: region });
+    }
+  }, [state.availableRegions]);
+
   // Memoized selectors
   const rollingAccuracy = useMemo(() => selectRollingAccuracy(state), [state.progress.rollingStats.answers]);
   const currentStreak = useMemo(() => selectCurrentStreak(state), [state.progress.rollingStats.currentStreak]);
@@ -212,6 +258,7 @@ export function QuizProvider({ children, birdCount = QUIZ_CONFIG.DEFAULT_BIRD_CO
     updateSettings,
     toggleSettingsModal,
     resetQuiz,
+    changeRegion,
     rollingAccuracy,
     currentStreak,
     maxStreak,

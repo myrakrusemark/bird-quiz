@@ -8,6 +8,7 @@
 export const STORAGE_KEYS = {
   PROGRESS: 'birdQuizProgress',
   SETTINGS: 'birdQuizSettings',
+  SELECTED_REGION: 'birdQuizSelectedRegion',
 } as const;
 
 /** Quiz configuration */
@@ -26,4 +27,5 @@ export const QUIZ_CONFIG = {
 export const DEFAULT_QUIZ_SETTINGS = {
   enabledQuestionTypes: ['photo-to-name', 'audio-to-name', 'mixed'] as const,
   enabledAnswerFormats: ['text', 'mixed'] as const,
+  selectedRegion: 'missouri',
 } as const;

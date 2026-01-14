@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuizContext } from './contexts/QuizContext';
 import { useToast } from './hooks/useToast';
 import { QuestionCard } from './components/QuestionCard';
@@ -16,12 +17,23 @@ function App() {
     nextQuestion,
     updateSettings,
     toggleSettingsModal,
+    changeRegion,
     rollingAccuracy,
     currentStreak,
     totalAnswers,
     isLoading,
     error,
   } = useQuizContext();
+
+  // Update background image when region changes
+  useEffect(() => {
+    if (state.currentRegion) {
+      document.body.style.setProperty(
+        '--background-image',
+        `url('${state.currentRegion.backgroundImage}')`
+      );
+    }
+  }, [state.currentRegion]);
 
   // Error state
   if (error) {
@@ -75,7 +87,12 @@ function App() {
           {/* Settings Modal */}
           <QuizSettings
             settings={state.settings}
+            availableRegions={state.availableRegions}
             onSave={(newSettings) => {
+              // Check if region changed
+              if (newSettings.selectedRegion !== state.settings.selectedRegion) {
+                changeRegion(newSettings.selectedRegion);
+              }
               updateSettings(newSettings);
               toggleSettingsModal(false);
             }}

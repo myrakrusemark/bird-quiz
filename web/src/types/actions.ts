@@ -2,7 +2,7 @@
  * Redux-style action types for quiz state management
  */
 
-import type { Bird, Question, QuizSettings, AnswerRecord } from './bird';
+import type { Bird, Question, QuizSettings, AnswerRecord, RegionConfig, RegionsConfig } from './bird';
 
 // Action types
 export type QuizAction =
@@ -17,4 +17,8 @@ export type QuizAction =
   | { type: 'UPDATE_SETTINGS'; payload: QuizSettings }
   | { type: 'TOGGLE_SETTINGS_MODAL'; payload?: boolean }
   | { type: 'RECORD_ANSWER'; payload: AnswerRecord }
-  | { type: 'RESET_QUIZ' };
+  | { type: 'RESET_QUIZ' }
+  | { type: 'LOAD_REGIONS_START' }
+  | { type: 'LOAD_REGIONS_SUCCESS'; payload: RegionsConfig }
+  | { type: 'LOAD_REGIONS_ERROR'; payload: string }
+  | { type: 'CHANGE_REGION'; payload: RegionConfig };

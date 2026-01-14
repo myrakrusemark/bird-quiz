@@ -5,7 +5,7 @@
  * progress tracking, and settings.
  */
 
-import type { Bird, Question, QuizSettings, Progress } from '@/types/bird';
+import type { Bird, Question, QuizSettings, Progress, RegionConfig } from '@/types/bird';
 import type { QuizAction } from '@/types/actions';
 import { generateQuestion } from '@/utils/questionGenerator';
 import { calculateAccuracy } from '@/utils/scoring';
@@ -30,6 +30,12 @@ export interface QuizState {
   // Settings
   settings: QuizSettings;
 
+  // Region management
+  currentRegion: RegionConfig | null;
+  availableRegions: RegionConfig[];
+  regionsLoading: boolean;
+  regionsError: string | null;
+
   // UI state
   settingsOpen: boolean;
 }
@@ -37,6 +43,7 @@ export interface QuizState {
 const DEFAULT_SETTINGS: QuizSettings = {
   enabledQuestionTypes: ['mixed'],
   enabledAnswerFormats: ['mixed'],
+  selectedRegion: 'missouri',
 };
 
 const DEFAULT_PROGRESS: Progress = {
@@ -66,6 +73,10 @@ export const initialQuizState: QuizState = {
   isCorrect: null,
   progress: DEFAULT_PROGRESS,
   settings: DEFAULT_SETTINGS,
+  currentRegion: null,
+  availableRegions: [],
+  regionsLoading: true,
+  regionsError: null,
   settingsOpen: false,
 };
 
@@ -232,6 +243,41 @@ export function quizReducer(state: QuizState, action: QuizAction): QuizState {
         birds: state.birds,
         progress: state.progress,
         settings: state.settings,
+        currentRegion: state.currentRegion,
+        availableRegions: state.availableRegions,
+      };
+
+    case 'LOAD_REGIONS_START':
+      return {
+        ...state,
+        regionsLoading: true,
+        regionsError: null,
+      };
+
+    case 'LOAD_REGIONS_SUCCESS':
+      return {
+        ...state,
+        availableRegions: action.payload.regions,
+        regionsLoading: false,
+        regionsError: null,
+      };
+
+    case 'LOAD_REGIONS_ERROR':
+      return {
+        ...state,
+        regionsLoading: false,
+        regionsError: action.payload,
+      };
+
+    case 'CHANGE_REGION':
+      return {
+        ...state,
+        currentRegion: action.payload,
+        // Reset quiz state when changing regions
+        currentQuestion: null,
+        answered: false,
+        selectedAnswer: null,
+        isCorrect: null,
       };
 
     default:

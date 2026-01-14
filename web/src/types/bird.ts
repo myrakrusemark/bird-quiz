@@ -46,9 +46,25 @@ export interface BirdDataset {
     version: string;
     created: string;
     totalSpecies: number;
+    region: string;
     dataSources: string[];
     testMode?: boolean;
   };
+}
+
+// Region configuration types
+export interface RegionConfig {
+  id: string;
+  name: string;
+  displayName: string;
+  datasetFile: string;
+  backgroundImage: string;
+  description: string;
+}
+
+export interface RegionsConfig {
+  regions: RegionConfig[];
+  defaultRegion: string;
 }
 
 // Learning mode types
@@ -73,6 +89,7 @@ export type AnswerFormat =
 export interface QuizSettings {
   enabledQuestionTypes: QuestionType[];
   enabledAnswerFormats: AnswerFormat[];
+  selectedRegion: string;
 }
 
 // Question types
