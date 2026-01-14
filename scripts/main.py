@@ -5,15 +5,16 @@ Bird Dataset Collection Script - Modular Version
 Fetches bird photos, audio recordings, spectrograms, and metadata from:
 - Xeno-canto (audio + spectrograms)
 - Wikipedia (descriptions)
-- Wikimedia Commons (photos)
+- iNaturalist (photos)
 
 Outputs a complete JSON dataset with cached media files.
 
 Usage:
-    python main.py              # Collect all species
-    python main.py --test       # Test mode (3 species)
-    python main.py --test 5     # Test mode (5 species)
-    python main.py --help       # Show help
+    python main.py --region missouri      # Collect Missouri birds
+    python main.py --region west-coast    # Collect West Coast birds
+    python main.py --region new-england   # Collect New England birds
+    python main.py --test                 # Test mode (3 species)
+    python main.py --help                 # Show help
 """
 
 import sys
@@ -25,7 +26,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from logger import setup_logger
 from config import LOG_LEVEL
-from species_list_missouri import SPECIES_LIST
 from modules.builder import DatasetBuilder
 
 
@@ -36,13 +36,15 @@ def parse_arguments() -> argparse.Namespace:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python main.py              # Collect all 20 species
-  python main.py --test       # Test with 3 species
-  python main.py --test 5     # Test with 5 species
-  python main.py --verbose    # Show debug output
-  python main.py --resume     # Resume from previous run
-  python main.py --no-cache   # Disable API caching
-  python main.py --clear-cache # Clear cache and start fresh
+  python main.py --region missouri      # Collect Missouri birds
+  python main.py --region west-coast    # Collect West Coast birds
+  python main.py --region new-england   # Collect New England birds
+  python main.py --test                 # Test with 3 species
+  python main.py --test 5               # Test with 5 species
+  python main.py --verbose              # Show debug output
+  python main.py --resume               # Resume from previous run
+  python main.py --no-cache             # Disable API caching
+  python main.py --clear-cache          # Clear cache and start fresh
 
 Get your free Xeno-canto API key at: https://xeno-canto.org/api/guide
         """
@@ -81,6 +83,14 @@ Get your free Xeno-canto API key at: https://xeno-canto.org/api/guide
         help='Clear all cached data before starting'
     )
 
+    parser.add_argument(
+        '--region', '-R',
+        type=str,
+        choices=['missouri', 'west-coast', 'new-england'],
+        default='missouri',
+        help='Region to collect data for (default: missouri)'
+    )
+
     return parser.parse_args()
 
 
@@ -92,10 +102,28 @@ def main() -> int:
     log_level = 'DEBUG' if args.verbose else LOG_LEVEL
     logger = setup_logger(__name__, log_level=log_level)
 
+    # Dynamic species list import based on region
+    region = args.region
+    region_module_map = {
+        'missouri': 'species_list_missouri',
+        'west-coast': 'species_list_west_coast',
+        'new-england': 'species_list_new_england'
+    }
+
+    module_name = region_module_map[region]
+    logger.info(f"Loading species list for region: {region}")
+
+    try:
+        species_module = __import__(module_name)
+        SPECIES_LIST = species_module.SPECIES_LIST
+    except ImportError as e:
+        logger.error(f"Failed to import species list for {region}: {e}")
+        return 1
+
     try:
         # Create dataset builder
         use_cache = not args.no_cache
-        builder = DatasetBuilder(use_cache=use_cache)
+        builder = DatasetBuilder(use_cache=use_cache, region=region)
 
         # Clear cache if requested
         if args.clear_cache and builder.cache:

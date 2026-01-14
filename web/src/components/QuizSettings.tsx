@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { QuizSettings, QuestionType, AnswerFormat, RegionConfig } from '@/types/bird';
 
 interface QuizSettingsProps {
@@ -28,9 +28,11 @@ export function QuizSettings({ settings, availableRegions, onSave, onCancel, isO
   const [localSettings, setLocalSettings] = useState<QuizSettings>(settings);
 
   // Sync local settings when modal opens
-  if (isOpen && localSettings !== settings) {
-    setLocalSettings(settings);
-  }
+  useEffect(() => {
+    if (isOpen) {
+      setLocalSettings(settings);
+    }
+  }, [isOpen, settings]);
 
   const toggleQuestionType = (questionType: QuestionType) => {
     const enabled = localSettings.enabledQuestionTypes.includes(questionType);
@@ -97,8 +99,8 @@ export function QuizSettings({ settings, availableRegions, onSave, onCancel, isO
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="fixed inset-0 flex items-center justify-center z-50 p-4 pointer-events-none">
+        <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto pointer-events-auto">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <h2 className="text-2xl font-bold text-gray-800">Quiz Settings</h2>

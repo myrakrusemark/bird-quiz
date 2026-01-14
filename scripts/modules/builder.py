@@ -16,7 +16,7 @@ from modules.inaturalist import iNaturalistClient
 from modules.downloader import Downloader
 from modules.cache import Cache
 from config import (
-    DATA_DIR, PHOTOS_DIR, AUDIO_DIR, DATASET_FILE,
+    DATA_DIR, PHOTOS_DIR, AUDIO_DIR, DATASET_FILE, get_dataset_file,
     CACHE_DIR, CACHE_EXPIRY_DAYS,
     MIN_RECORDINGS_PER_SPECIES, MIN_PHOTOS_PER_SPECIES
 )
@@ -27,17 +27,19 @@ logger = get_logger(__name__)
 class DatasetBuilder:
     """Builds the bird dataset by collecting data from multiple sources"""
 
-    def __init__(self, use_cache: bool = True):
+    def __init__(self, use_cache: bool = True, region: str = 'missouri'):
         """
         Initialize dataset builder.
 
         Args:
             use_cache: Whether to use caching for API responses
+            region: Region identifier for output file naming
         """
         self.xeno_canto = XenoCantoClient()
         self.wikipedia = WikipediaClient()
         self.inaturalist = iNaturalistClient()
         self.downloader = Downloader()
+        self.region = region
 
         # Initialize cache
         self.use_cache = use_cache
@@ -277,9 +279,10 @@ class DatasetBuilder:
 
         # Load existing dataset if it exists
         existing_species_map = {}
-        if DATASET_FILE.exists():
+        dataset_file = get_dataset_file(self.region)
+        if dataset_file.exists():
             try:
-                with open(DATASET_FILE, 'r', encoding='utf-8') as f:
+                with open(dataset_file, 'r', encoding='utf-8') as f:
                     existing_dataset = json.load(f)
                     # Create map of existing species by ID
                     for species in existing_dataset.get('species', []):
@@ -294,12 +297,17 @@ class DatasetBuilder:
 
         # Build final dataset structure with merged data
         merged_species = list(existing_species_map.values())
+
+        # Format region name for display (e.g., "west-coast" -> "West Coast")
+        region_display = self.region.replace('-', ' ').title()
+
         dataset = {
             "species": merged_species,
             "metadata": {
                 "version": "1.0",
                 "created": datetime.now().strftime("%Y-%m-%d"),
                 "totalSpecies": len(merged_species),
+                "region": region_display,
                 "dataSources": ["xeno-canto", "wikipedia", "inaturalist"],
                 "testMode": test_mode
             }
@@ -310,10 +318,10 @@ class DatasetBuilder:
         logger.info("Saving dataset to JSON...")
         logger.info("=" * 60)
 
-        with open(DATASET_FILE, 'w', encoding='utf-8') as f:
+        with open(dataset_file, 'w', encoding='utf-8') as f:
             json.dump(dataset, f, indent=2, ensure_ascii=False)
 
-        logger.info(f"Dataset saved to {DATASET_FILE}")
+        logger.info(f"Dataset saved to {dataset_file}")
 
         # Print summary
         logger.info("=" * 60)
@@ -325,7 +333,7 @@ class DatasetBuilder:
         total_photos = sum(s['stats']['totalPhotos'] for s in all_species_data)
         logger.info(f"Total recordings: {total_recordings}")
         logger.info(f"Total photos: {total_photos}")
-        logger.info(f"Dataset file: {DATASET_FILE}")
+        logger.info(f"Dataset file: {dataset_file}")
         logger.info(f"Media files saved to: {DATA_DIR}/")
         logger.info("=" * 60)
 
