@@ -174,6 +174,7 @@ function createMixedOptions(
       recording,
       excludePhotoUrl: isCorrectBird ? excludePhotoUrl : undefined,
       excludeAudioUrl: isCorrectBird ? excludeAudioUrl : undefined,
+      hideLabel: isNameToMediaQuestion ? true : false,
     });
 
     options.push(option);
