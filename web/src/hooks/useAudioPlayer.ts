@@ -42,6 +42,11 @@ interface UseAudioPlayerReturn {
   isPlaying: boolean;
 
   /**
+   * Playback progress (0-1)
+   */
+  progress: number;
+
+  /**
    * Play the audio
    */
   play: () => void;
@@ -72,11 +77,13 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   // Store event listeners in refs so we can remove them later
   const endedHandlerRef = useRef<(() => void) | null>(null);
   const pauseHandlerRef = useRef<(() => void) | null>(null);
   const playHandlerRef = useRef<(() => void) | null>(null);
+  const timeUpdateHandlerRef = useRef<(() => void) | null>(null);
 
   // Initialize audio element
   useEffect(() => {
@@ -96,6 +103,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
     // Create event handlers
     const handleEnded = () => {
       setIsPlaying(false);
+      setProgress(0);
       onEnded?.();
     };
 
@@ -109,15 +117,23 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
       onPlay?.();
     };
 
+    const handleTimeUpdate = () => {
+      if (audio.duration) {
+        setProgress(audio.currentTime / audio.duration);
+      }
+    };
+
     // Store handlers in refs
     endedHandlerRef.current = handleEnded;
     pauseHandlerRef.current = handlePause;
     playHandlerRef.current = handlePlay;
+    timeUpdateHandlerRef.current = handleTimeUpdate;
 
     // Add event listeners
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('pause', handlePause);
     audio.addEventListener('play', handlePlay);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
 
     // Auto-play if requested
     if (autoPlay) {
@@ -139,6 +155,9 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
         if (playHandlerRef.current) {
           audio.removeEventListener('play', playHandlerRef.current);
         }
+        if (timeUpdateHandlerRef.current) {
+          audio.removeEventListener('timeupdate', timeUpdateHandlerRef.current);
+        }
 
         // Stop playback
         audio.pause();
@@ -153,7 +172,9 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
       endedHandlerRef.current = null;
       pauseHandlerRef.current = null;
       playHandlerRef.current = null;
+      timeUpdateHandlerRef.current = null;
       setIsPlaying(false);
+      setProgress(0);
     };
   }, [src, autoPlay, onEnded, onPause, onPlay]);
 
@@ -176,6 +197,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       setIsPlaying(false);
+      setProgress(0);
     }
   }, []);
 
@@ -189,6 +211,7 @@ export function useAudioPlayer(options: UseAudioPlayerOptions): UseAudioPlayerRe
 
   return {
     isPlaying,
+    progress,
     play,
     pause,
     stop,

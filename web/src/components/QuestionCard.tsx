@@ -1,16 +1,11 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import type { Question, QuestionOption, BirdPhoto, BirdRecording } from '@/types/bird';
 import { ExpandableImage } from './ExpandableImage';
 import { ImageModal } from './ImageModal';
-import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { AudioButton } from './AudioButton';
 import { selectRandomMedia, type UsedMedia } from '@/utils/randomMediaSelector';
 import { AboutSection } from './AboutSection';
 import { ResultHeader } from './ResultHeader';
-
-// Extend HTMLAudioElement to store event handler reference
-interface AudioWithHandler extends HTMLAudioElement {
-  __endedHandler?: () => void;
-}
 
 interface QuestionCardProps {
   question: Question;
@@ -29,23 +24,6 @@ export function QuestionCard({
   selectedAnswer,
   onNextQuestion,
 }: QuestionCardProps) {
-  // Determine which audio URL to use for main question audio
-  const mainAudioUrl = useMemo(() => {
-    if (question.mediaType === 'audio') {
-      return question.mediaUrl;
-    } else if (question.secondaryMediaUrl) {
-      return question.secondaryMediaUrl;
-    }
-    return null;
-  }, [question.mediaType, question.mediaUrl, question.secondaryMediaUrl]);
-
-  // Use the new useAudioPlayer hook for main question audio
-  const mainAudio = useAudioPlayer({ src: mainAudioUrl || null });
-
-  // Track all option audio instances (map of audioUrl -> audio player)
-  const optionAudios = useRef<Map<string, AudioWithHandler>>(new Map());
-  const [audioPlaying, setAudioPlaying] = useState<Record<string, boolean>>({});
-
   // Track expanded image for modal
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
 
@@ -61,30 +39,6 @@ export function QuestionCard({
   } | null>(null);
 
   // Note: speciesInfoMedia.recording is available for future audio playback feature
-
-  // Cleanup option audio instances when question changes
-  useEffect(() => {
-    // Capture current ref value at effect creation time
-    const audiosToCleanup = optionAudios.current;
-
-    return () => {
-      // Stop and clean up all option audio instances
-      audiosToCleanup.forEach((audio) => {
-        // Remove event listener if it exists
-        if (audio.__endedHandler) {
-          audio.removeEventListener('ended', audio.__endedHandler);
-          delete audio.__endedHandler;
-        }
-
-        // Stop playback and clear source
-        audio.pause();
-        audio.currentTime = 0;
-        audio.src = '';
-      });
-      audiosToCleanup.clear();
-      setAudioPlaying({});
-    };
-  }, [question.id]);
 
   // Select random species info media when question is answered
   useEffect(() => {
@@ -122,14 +76,7 @@ export function QuestionCard({
   // Handle transition when answer is submitted
   useEffect(() => {
     if (answered) {
-      // Stop all audio playback
-      mainAudio.pause();
-      optionAudios.current.forEach((audio) => {
-        audio.pause();
-        audio.currentTime = 0;
-      });
-
-      // Fade out question view
+      // Fade out question view (AudioButton stops via disabled prop)
       setQuestionVisible(false);
 
       // After fade completes, switch to result view and fade it in
@@ -140,7 +87,7 @@ export function QuestionCard({
 
       return () => clearTimeout(switchTimer);
     }
-  }, [answered, mainAudio]);
+  }, [answered]);
 
   // Reset view mode when new question loads
   useEffect(() => {
@@ -165,12 +112,12 @@ export function QuestionCard({
 
           {/* Audio player */}
           <div className="w-full max-w-md text-center">
-            <button
-              onClick={mainAudio.toggle}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg transition-all transform hover:scale-105"
-            >
-              {mainAudio.isPlaying ? '⏹️ Stop' : '▶️ Play Bird Call'}
-            </button>
+            <AudioButton
+              src={question.secondaryMediaUrl!}
+              label="Bird Call"
+              size="lg"
+              disabled={answered}
+            />
           </div>
         </div>
       );
@@ -195,12 +142,12 @@ export function QuestionCard({
       case 'audio':
         return (
           <div className="mb-6 text-center">
-            <button
-              onClick={mainAudio.toggle}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold shadow-lg transition-all transform hover:scale-105"
-            >
-              {mainAudio.isPlaying ? '⏹️ Stop' : '▶️ Play Bird Call'}
-            </button>
+            <AudioButton
+              src={question.mediaUrl!}
+              label="Bird Call"
+              size="lg"
+              disabled={answered}
+            />
           </div>
         );
 
@@ -230,44 +177,6 @@ export function QuestionCard({
       '',                                    // bottom-right
     ][index];
 
-    const handleOptionAudioPlay = (optionId: string, audioUrl: string) => {
-      let audio = optionAudios.current.get(optionId);
-
-      if (!audio) {
-        audio = new Audio(audioUrl) as AudioWithHandler;
-        optionAudios.current.set(optionId, audio);
-
-        // Create event handler and store it so we can remove it later
-        const endedHandler = () => {
-          setAudioPlaying(prev => ({ ...prev, [optionId]: false }));
-        };
-
-        // Store the handler on the audio element for later removal
-        audio.__endedHandler = endedHandler;
-        audio.addEventListener('ended', endedHandler);
-      }
-
-      if (audioPlaying[optionId]) {
-        audio.pause();
-        audio.currentTime = 0;
-        setAudioPlaying(prev => ({ ...prev, [optionId]: false }));
-      } else {
-        // Stop all other option audio
-        optionAudios.current.forEach((aud, id) => {
-          if (id !== optionId) {
-            aud.pause();
-            aud.currentTime = 0;
-          }
-        });
-
-        setAudioPlaying({ [optionId]: true });
-        audio.play().catch((error) => {
-          console.error('Error playing option audio:', error);
-          setAudioPlaying(prev => ({ ...prev, [optionId]: false }));
-        });
-      }
-    };
-
     // Shared content for all option types
     const optionContent = (
       <>
@@ -284,8 +193,8 @@ export function QuestionCard({
               onExpand={() => setExpandedImage(option.imageUrl!)}
               iconPosition="bottom-right"
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-center">
-              <span className="text-lg font-medium">{option.label}</span>
+            <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-1 text-center">
+              <span className="text-xs font-medium">{option.label}</span>
             </div>
           </div>
         )}
@@ -300,24 +209,20 @@ export function QuestionCard({
               iconPosition="bottom-right"
             />
             {showLabel && (
-              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-center">
-                <span className="text-lg font-medium">{option.label}</span>
+              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-1 text-center">
+                <span className="text-xs font-medium">{option.label}</span>
               </div>
             )}
           </div>
         )}
 
         {option.type === 'audio-only' && option.audioUrl && (
-          <div className="flex flex-col items-center gap-2">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOptionAudioPlay(option.id, option.audioUrl!);
-              }}
-              className="px-4 py-2 bg-blue-500 text-white rounded text-sm font-medium hover:bg-blue-600"
-            >
-              {audioPlaying[option.id] ? '⏹️ Stop' : '▶️ Play'}
-            </button>
+          <div className="flex flex-col items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            <AudioButton
+              src={option.audioUrl}
+              size="sm"
+              disabled={answered}
+            />
             {answered && <span className={`text-lg font-medium mt-1 ${textColor}`}>{option.label}</span>}
           </div>
         )}
@@ -393,7 +298,7 @@ export function QuestionCard({
       {/* Result view */}
       {answered && (
         <div
-          className={`space-y-6 transition-opacity duration-300 ${
+          className={`transition-opacity duration-300 ${
             resultVisible ? 'opacity-100' : 'opacity-0'
           } ${viewMode === 'question' ? 'absolute invisible pointer-events-none' : ''}`}
         >

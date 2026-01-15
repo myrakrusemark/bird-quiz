@@ -1,6 +1,6 @@
 import type { Bird, BirdPhoto, BirdRecording } from '@/types/bird';
 import { ExpandableImage } from './ExpandableImage';
-import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { AudioButton } from './AudioButton';
 import { getPhotoUrl, getRecordingAudioUrl } from '@/utils/dataLoader';
 
 interface AboutSectionProps {
@@ -13,14 +13,8 @@ interface AboutSectionProps {
 }
 
 export function AboutSection({ bird, speciesInfoMedia, onExpandImage }: AboutSectionProps) {
-  // Audio player for species info recording
-  const speciesAudioSrc = speciesInfoMedia?.recording
-    ? getRecordingAudioUrl(speciesInfoMedia.recording)
-    : null;
-  const speciesAudio = useAudioPlayer({ src: speciesAudioSrc });
-
   return (
-    <div className="bg-black/60 backdrop-blur-sm rounded-none md:rounded-lg border border-x-0 md:border-x border-white/20 shadow-xl p-6">
+    <div className="bg-black/60 backdrop-blur-sm rounded-none md:rounded-b-lg border border-x-0 md:border-x border-white/20 shadow-xl p-6">
       <h3 className="text-2xl font-bold text-white mb-4" style={{ fontFamily: "'Indie Flower', cursive" }}>
         About the {bird.commonName}
       </h3>
@@ -44,12 +38,11 @@ export function AboutSection({ bird, speciesInfoMedia, onExpandImage }: AboutSec
           {/* Audio Player */}
           {speciesInfoMedia?.recording && (
             <div className="text-center">
-              <button
-                onClick={speciesAudio.toggle}
-                className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition-all"
-              >
-                {speciesAudio.isPlaying ? '⏹️ Stop Call' : '▶️ Play Call'}
-              </button>
+              <AudioButton
+                src={getRecordingAudioUrl(speciesInfoMedia.recording)}
+                label="Call"
+                size="md"
+              />
             </div>
           )}
 
