@@ -53,17 +53,17 @@ export function generateNameToMediaQuestion(
   let questionText = '';
   switch (answerFormat) {
     case 'photo':
-      questionText = `Which photo shows the ${correctBird.commonName}?`;
+      questionText = 'Which photo shows the...';
       break;
     case 'audio':
-      questionText = `Which sound belongs to the ${correctBird.commonName}?`;
+      questionText = 'Which sound belongs to the...';
       break;
     case 'mixed':
-      questionText = `Which answer shows the ${correctBird.commonName}?`;
+      questionText = 'Which answer shows the...';
       break;
     default:
       // Should never happen since we filter out 'text' format above
-      questionText = `Which answer shows the ${correctBird.commonName}?`;
+      questionText = 'Which answer shows the...';
       break;
   }
 
