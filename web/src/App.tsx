@@ -93,11 +93,8 @@ function App() {
           {/* Settings Modal */}
           <QuizSettings
             settings={state.settings}
-            onSave={(newSettings) => {
-              updateSettings(newSettings);
-              toggleSettingsModal(false);
-            }}
-            onCancel={() => toggleSettingsModal(false)}
+            onChange={updateSettings}
+            onClose={() => toggleSettingsModal(false)}
             isOpen={state.settingsOpen}
           />
 
@@ -114,26 +111,14 @@ function App() {
           />
 
           {state.currentQuestion && (
-            <>
-              <QuestionCard
-                question={state.currentQuestion}
-                onAnswer={answerQuestion}
-                answered={state.answered}
-                isCorrect={state.isCorrect}
-                selectedAnswer={state.selectedAnswer}
-              />
-
-              {state.answered && (
-                <div className="mt-6 text-center">
-                  <button
-                    onClick={nextQuestion}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors shadow-lg"
-                  >
-                    Next Question →
-                  </button>
-                </div>
-              )}
-            </>
+            <QuestionCard
+              question={state.currentQuestion}
+              onAnswer={answerQuestion}
+              answered={state.answered}
+              isCorrect={state.isCorrect}
+              selectedAnswer={state.selectedAnswer}
+              onNextQuestion={nextQuestion}
+            />
           )}
         </div>
       </div>

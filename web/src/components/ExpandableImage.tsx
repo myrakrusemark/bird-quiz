@@ -25,7 +25,7 @@ export function ExpandableImage({
           e.stopPropagation();
           onExpand(src);
         }}
-        className={`absolute ${positionClasses} w-10 h-10 p-1.5 hover:scale-110 transition-all cursor-pointer flex items-center justify-center`}
+        className={`absolute ${positionClasses} z-10 w-10 h-10 p-1.5 hover:scale-110 transition-all cursor-pointer flex items-center justify-center`}
         aria-label="Expand image"
       >
         <svg

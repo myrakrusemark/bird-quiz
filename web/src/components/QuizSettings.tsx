@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
 import type { QuizSettings, QuestionType, AnswerFormat } from '@/types/bird';
 
 interface QuizSettingsProps {
   settings: QuizSettings;
-  onSave: (settings: QuizSettings) => void;
-  onCancel: () => void;
+  onChange: (settings: QuizSettings) => void;
+  onClose: () => void;
   isOpen: boolean;
 }
 
@@ -23,69 +22,46 @@ const ANSWER_FORMAT_LABELS: Record<AnswerFormat, string> = {
   'mixed': 'Mixed (Random)'
 };
 
-export function QuizSettings({ settings, onSave, onCancel, isOpen }: QuizSettingsProps) {
-  const [localSettings, setLocalSettings] = useState<QuizSettings>(settings);
-
-  // Sync local settings when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setLocalSettings(settings);
-    }
-  }, [isOpen, settings]);
-
+export function QuizSettings({ settings, onChange, onClose, isOpen }: QuizSettingsProps) {
   const toggleQuestionType = (questionType: QuestionType) => {
-    const enabled = localSettings.enabledQuestionTypes.includes(questionType);
+    const enabled = settings.enabledQuestionTypes.includes(questionType);
 
     if (enabled) {
       // Don't allow disabling the last question type
-      if (localSettings.enabledQuestionTypes.length === 1) {
+      if (settings.enabledQuestionTypes.length === 1) {
         return;
       }
-      setLocalSettings({
-        ...localSettings,
-        enabledQuestionTypes: localSettings.enabledQuestionTypes.filter(t => t !== questionType)
+      onChange({
+        ...settings,
+        enabledQuestionTypes: settings.enabledQuestionTypes.filter(t => t !== questionType)
       });
     } else {
-      setLocalSettings({
-        ...localSettings,
-        enabledQuestionTypes: [...localSettings.enabledQuestionTypes, questionType]
+      onChange({
+        ...settings,
+        enabledQuestionTypes: [...settings.enabledQuestionTypes, questionType]
       });
     }
   };
 
   const toggleAnswerFormat = (answerFormat: AnswerFormat) => {
-    const enabled = localSettings.enabledAnswerFormats.includes(answerFormat);
+    const enabled = settings.enabledAnswerFormats.includes(answerFormat);
 
     if (enabled) {
       // Don't allow disabling the last answer format
-      if (localSettings.enabledAnswerFormats.length === 1) {
+      if (settings.enabledAnswerFormats.length === 1) {
         return;
       }
-      setLocalSettings({
-        ...localSettings,
-        enabledAnswerFormats: localSettings.enabledAnswerFormats.filter(f => f !== answerFormat)
+      onChange({
+        ...settings,
+        enabledAnswerFormats: settings.enabledAnswerFormats.filter(f => f !== answerFormat)
       });
     } else {
-      setLocalSettings({
-        ...localSettings,
-        enabledAnswerFormats: [...localSettings.enabledAnswerFormats, answerFormat]
+      onChange({
+        ...settings,
+        enabledAnswerFormats: [...settings.enabledAnswerFormats, answerFormat]
       });
     }
   };
-
-  const handleSave = () => {
-    onSave(localSettings);
-  };
-
-  const handleCancel = () => {
-    setLocalSettings(settings); // Reset to original
-    onCancel();
-  };
-
-  // Validation
-  const hasValidSettings =
-    localSettings.enabledQuestionTypes.length > 0 &&
-    localSettings.enabledAnswerFormats.length > 0;
 
   if (!isOpen) return null;
 
@@ -94,7 +70,7 @@ export function QuizSettings({ settings, onSave, onCancel, isOpen }: QuizSetting
       {/* Overlay */}
       <div
         className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={handleCancel}
+        onClick={onClose}
       />
 
       {/* Modal */}
@@ -104,7 +80,7 @@ export function QuizSettings({ settings, onSave, onCancel, isOpen }: QuizSetting
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <h2 className="text-2xl font-bold text-gray-800">Quiz Settings</h2>
             <button
-              onClick={handleCancel}
+              onClick={onClose}
               className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
               aria-label="Close"
             >
@@ -121,8 +97,8 @@ export function QuizSettings({ settings, onSave, onCancel, isOpen }: QuizSetting
               </h3>
               <div className="space-y-3">
                 {(Object.keys(QUESTION_TYPE_LABELS) as QuestionType[]).map(questionType => {
-                  const isEnabled = localSettings.enabledQuestionTypes.includes(questionType);
-                  const isOnlyOne = localSettings.enabledQuestionTypes.length === 1 && isEnabled;
+                  const isEnabled = settings.enabledQuestionTypes.includes(questionType);
+                  const isOnlyOne = settings.enabledQuestionTypes.length === 1 && isEnabled;
 
                   return (
                     <label
@@ -156,8 +132,8 @@ export function QuizSettings({ settings, onSave, onCancel, isOpen }: QuizSetting
               </h3>
               <div className="space-y-3">
                 {(Object.keys(ANSWER_FORMAT_LABELS) as AnswerFormat[]).map(answerFormat => {
-                  const isEnabled = localSettings.enabledAnswerFormats.includes(answerFormat);
-                  const isOnlyOne = localSettings.enabledAnswerFormats.length === 1 && isEnabled;
+                  const isEnabled = settings.enabledAnswerFormats.includes(answerFormat);
+                  const isOnlyOne = settings.enabledAnswerFormats.length === 1 && isEnabled;
 
                   return (
                     <label
@@ -184,38 +160,6 @@ export function QuizSettings({ settings, onSave, onCancel, isOpen }: QuizSetting
               </div>
             </div>
 
-            {/* Validation Warning */}
-            {!hasValidSettings && (
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                <div className="flex items-start">
-                  <span className="text-yellow-600 mr-2">⚠</span>
-                  <p className="text-sm text-yellow-700">
-                    At least one option must be selected in each section
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Footer */}
-          <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
-            <button
-              onClick={handleCancel}
-              className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={!hasValidSettings}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                hasValidSettings
-                  ? 'bg-blue-600 text-white hover:bg-blue-700'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-            >
-              Save Settings
-            </button>
           </div>
         </div>
       </div>

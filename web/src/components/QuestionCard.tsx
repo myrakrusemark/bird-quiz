@@ -4,6 +4,8 @@ import { ExpandableImage } from './ExpandableImage';
 import { ImageModal } from './ImageModal';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import { selectRandomMedia, type UsedMedia } from '@/utils/randomMediaSelector';
+import { AboutSection } from './AboutSection';
+import { ResultHeader } from './ResultHeader';
 
 // Extend HTMLAudioElement to store event handler reference
 interface AudioWithHandler extends HTMLAudioElement {
@@ -16,6 +18,7 @@ interface QuestionCardProps {
   answered: boolean;
   isCorrect: boolean | null;
   selectedAnswer: string | null;
+  onNextQuestion: () => void;
 }
 
 export function QuestionCard({
@@ -24,6 +27,7 @@ export function QuestionCard({
   answered,
   isCorrect,
   selectedAnswer,
+  onNextQuestion,
 }: QuestionCardProps) {
   // Determine which audio URL to use for main question audio
   const mainAudioUrl = useMemo(() => {
@@ -44,6 +48,11 @@ export function QuestionCard({
 
   // Track expanded image for modal
   const [expandedImage, setExpandedImage] = useState<string | null>(null);
+
+  // View mode state for fade transitions
+  const [viewMode, setViewMode] = useState<'question' | 'result'>('question');
+  const [questionVisible, setQuestionVisible] = useState(true);
+  const [resultVisible, setResultVisible] = useState(false);
 
   // Species info media selection
   const [speciesInfoMedia, setSpeciesInfoMedia] = useState<{
@@ -112,6 +121,36 @@ export function QuestionCard({
     setSpeciesInfoMedia(selected);
   }, [answered, question.id]);
 
+  // Handle transition when answer is submitted
+  useEffect(() => {
+    if (answered) {
+      // Stop all audio playback
+      mainAudio.pause();
+      optionAudios.current.forEach((audio) => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+
+      // Fade out question view
+      setQuestionVisible(false);
+
+      // After fade completes, switch to result view and fade it in
+      const switchTimer = setTimeout(() => {
+        setViewMode('result');
+        setResultVisible(true);
+      }, 300);
+
+      return () => clearTimeout(switchTimer);
+    }
+  }, [answered, mainAudio]);
+
+  // Reset view mode when new question loads
+  useEffect(() => {
+    setViewMode('question');
+    setQuestionVisible(true);
+    setResultVisible(false);
+  }, [question.id]);
+
   const renderMedia = () => {
     // Handle photo + audio combined
     if (question.mediaUrl && question.secondaryMediaUrl) {
@@ -172,27 +211,26 @@ export function QuestionCard({
     }
   };
 
-  const renderOption = (option: QuestionOption) => {
+  const renderOption = (option: QuestionOption, index: number) => {
     const isSelected = selectedAnswer === option.id;
-    const isCorrectAnswer = option.id === question.correctAnswer;
     const showLabel = !option.hideLabel || answered;
     const isImageOnly = option.type === 'image-only';
 
-    let bgColor = 'bg-white hover:bg-gray-50';
-    let borderColor = 'border-gray-300';
+    let bgColor = 'bg-white/10 hover:bg-white/20';
+    let textColor = 'text-white';
 
-    if (answered) {
-      if (isCorrectAnswer) {
-        bgColor = 'bg-green-100 border-green-500';
-        borderColor = 'border-green-500';
-      } else if (isSelected && !isCorrect) {
-        bgColor = 'bg-red-100 border-red-500';
-        borderColor = 'border-red-500';
-      }
-    } else if (isSelected) {
-      bgColor = 'bg-blue-50';
-      borderColor = 'border-blue-400';
+    // Only show selection state before answering
+    if (!answered && isSelected) {
+      bgColor = 'bg-blue-500/30 hover:bg-blue-500/40';
     }
+
+    // Grid position-based borders (top-left=0, top-right=1, bottom-left=2, bottom-right=3)
+    const borderClasses = [
+      'border-r border-b border-white/20', // top-left
+      'border-b border-white/20',           // top-right
+      'border-r border-white/20',           // bottom-left
+      '',                                    // bottom-right
+    ][index];
 
     const handleOptionAudioPlay = (optionId: string, audioUrl: string) => {
       let audio = optionAudios.current.get(optionId);
@@ -236,19 +274,21 @@ export function QuestionCard({
     const optionContent = (
       <>
         {option.type === 'text' && (
-          <span className="text-lg font-medium">{option.label}</span>
+          <span className={`text-lg font-medium ${textColor}`}>{option.label}</span>
         )}
 
         {option.type === 'text-image' && option.imageUrl && (
-          <div className="flex items-center gap-3">
+          <div className="relative w-full">
             <ExpandableImage
               src={option.imageUrl!}
               alt={option.label || 'Bird'}
-              className="w-16 h-16 object-cover rounded"
+              className="w-full h-full object-cover"
               onExpand={() => setExpandedImage(option.imageUrl!)}
               iconPosition="bottom-right"
             />
-            <span className="text-lg font-medium">{option.label}</span>
+            <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-center">
+              <span className="text-lg font-medium">{option.label}</span>
+            </div>
           </div>
         )}
 
@@ -257,12 +297,12 @@ export function QuestionCard({
             <ExpandableImage
               src={option.imageUrl!}
               alt={option.label || 'Bird'}
-              className="w-full h-full object-cover rounded-lg"
+              className="w-full h-full object-cover"
               onExpand={() => setExpandedImage(option.imageUrl!)}
               iconPosition="bottom-right"
             />
             {showLabel && (
-              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-center rounded-b-lg">
+              <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-2 text-center">
                 <span className="text-lg font-medium">{option.label}</span>
               </div>
             )}
@@ -280,27 +320,23 @@ export function QuestionCard({
             >
               {audioPlaying[option.id] ? '⏹️ Stop' : '▶️ Play'}
             </button>
-            {showLabel && <span className="text-lg font-medium mt-1">{option.label}</span>}
+            {answered && <span className={`text-lg font-medium mt-1 ${textColor}`}>{option.label}</span>}
           </div>
-        )}
-
-        {answered && isCorrectAnswer && !isImageOnly && (
-          <span className="ml-2 text-green-600 font-bold">✓ Correct</span>
-        )}
-        {answered && isSelected && !isCorrect && !isImageOnly && (
-          <span className="ml-2 text-red-600 font-bold">✗ Wrong</span>
         )}
       </>
     );
 
     // Use conditional wrapper to allow audio buttons to work after answering
-    const containerPadding = isImageOnly ? 'p-0 overflow-hidden' : 'p-4';
+    const isFullBleedImage = isImageOnly || option.type === 'text-image';
+    const containerPadding = isFullBleedImage ? 'p-0 overflow-hidden' : 'p-4';
+    // Center content except for full-bleed image types
+    const centerClasses = isFullBleedImage ? '' : 'flex items-center justify-center';
 
     if (answered) {
       return (
         <div
           key={option.id}
-          className={`w-full ${containerPadding} border-2 rounded-lg transition-all cursor-default ${bgColor} ${borderColor}`}
+          className={`w-full ${containerPadding} ${borderClasses} ${centerClasses} transition-all cursor-default ${bgColor}`}
         >
           {optionContent}
         </div>
@@ -311,19 +347,28 @@ export function QuestionCard({
       <div
         key={option.id}
         onClick={() => onAnswer(option.id)}
-        className={`w-full ${containerPadding} border-2 rounded-lg transition-all cursor-pointer ${bgColor} ${borderColor}`}
+        className={`w-full ${containerPadding} ${borderClasses} ${centerClasses} transition-all cursor-pointer ${bgColor}`}
       >
         {optionContent}
       </div>
     );
   };
 
+  // Find selected bird name for result header
+  const selectedOption = question.options.find(opt => opt.id === selectedAnswer);
+  const selectedBirdName = selectedOption?.label || '';
+
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
-        {/* Question box */}
-        <div className="flex justify-center lg:flex-1">
-          <div className="bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 shadow-xl p-6">
+    <div className="max-w-6xl mx-auto p-6 relative">
+      {/* Question view - unified container */}
+      <div
+        className={`bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 shadow-xl overflow-hidden transition-opacity duration-300 ${
+          questionVisible ? 'opacity-100' : 'opacity-0'
+        } ${viewMode === 'result' ? 'absolute invisible pointer-events-none' : ''}`}
+      >
+        <div className="flex flex-col lg:flex-row">
+          {/* Question section */}
+          <div className="lg:flex-1 p-6">
             <h2 className="text-2xl font-bold text-center mb-6 text-white">
               {question.questionText}
             </h2>
@@ -339,75 +384,31 @@ export function QuestionCard({
 
             {renderMedia()}
           </div>
-        </div>
 
-        {/* Answer grid */}
-        <div className="w-full lg:w-96 flex gap-3">
-          {/* Left column */}
-          <div className="flex flex-col gap-3 flex-1">
-            {question.options.slice(0, 2).map(option => renderOption(option))}
-          </div>
-
-          {/* Right column */}
-          <div className="flex flex-col gap-3 flex-1">
-            {question.options.slice(2, 4).map(option => renderOption(option))}
+          {/* Answer grid */}
+          <div className="lg:w-96 border-t lg:border-t-0 lg:border-l border-white/20 grid grid-cols-2">
+            {question.options.map((option, index) => renderOption(option, index))}
           </div>
         </div>
       </div>
 
+      {/* Result view */}
       {answered && (
-        <div className="mt-6 bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 shadow-xl p-6">
-          <h3 className="text-2xl font-bold text-white mb-4" style={{ fontFamily: "'Indie Flower', cursive" }}>
-            About the {question.bird.commonName}
-          </h3>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Left: Random Photo */}
-            <div>
-              {speciesInfoMedia?.photo && (
-                <ExpandableImage
-                  src={speciesInfoMedia.photo.cached}
-                  alt={`${question.bird.commonName}`}
-                  className="w-full rounded-lg shadow-lg object-cover"
-                  onExpand={() => setExpandedImage(speciesInfoMedia.photo!.cached)}
-                  iconPosition="bottom-right"
-                />
-              )}
-            </div>
-
-            {/* Right: Audio + Description */}
-            <div className="flex flex-col gap-4">
-              {/* Audio Player */}
-              {speciesInfoMedia?.recording && (
-                <div className="text-center">
-                  <button
-                    onClick={speciesAudio.toggle}
-                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold shadow-lg transition-all"
-                  >
-                    {speciesAudio.isPlaying ? '⏹️ Stop Call' : '▶️ Play Call'}
-                  </button>
-                </div>
-              )}
-
-              {/* Description */}
-              <div className="text-white text-sm leading-relaxed">
-                <p>{question.bird.description}</p>
-              </div>
-
-              {/* Scientific Name with Wikipedia Link */}
-              <div className="text-gray-300 text-xs italic mt-2 flex items-center justify-between">
-                <em>{question.bird.scientificName}</em>
-                <a
-                  href={`https://en.wikipedia.org/wiki/${encodeURIComponent(question.bird.commonName)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-300 hover:text-blue-200 hover:underline ml-2"
-                >
-                  Wikipedia →
-                </a>
-              </div>
-            </div>
-          </div>
+        <div
+          className={`space-y-6 transition-opacity duration-300 ${
+            resultVisible ? 'opacity-100' : 'opacity-0'
+          } ${viewMode === 'question' ? 'absolute invisible pointer-events-none' : ''}`}
+        >
+          <ResultHeader
+            isCorrect={isCorrect || false}
+            selectedBirdName={selectedBirdName}
+            onNextQuestion={onNextQuestion}
+          />
+          <AboutSection
+            bird={question.bird}
+            speciesInfoMedia={speciesInfoMedia}
+            onExpandImage={(url) => setExpandedImage(url)}
+          />
         </div>
       )}
 
