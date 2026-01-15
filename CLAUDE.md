@@ -219,13 +219,134 @@ Key settings:
 
 ## Current Development State
 
-**Active Branch**: `game-style-ui`
+**Active Branch**: `master` (production)
 
 Recent features:
 - Game-style UI with translucent backdrops and background image
 - Endless journey mode with rolling 20-question accuracy tracking
 - Enhanced quiz settings with multiple question/answer modalities
 - Audio playback bug fixes
+
+## Hosting & Deployment
+
+### Cloudflare Pages (Frontend)
+
+**Live URL**: https://birdquiz.myrakrusemark.com
+
+The app is hosted on Cloudflare Pages with automatic deployments from GitHub.
+
+**Deployment workflow:**
+1. Push changes to `master` branch
+2. Cloudflare Pages automatically builds and deploys
+3. Live in ~30-60 seconds
+
+```bash
+# Deploy changes
+git add .
+git commit -m "Your commit message"
+git push origin master
+# Cloudflare Pages auto-deploys from master
+```
+
+**Build settings** (configured in Cloudflare dashboard):
+- Build command: `cd web && npm install && npm run build`
+- Build output directory: `web/dist`
+- Root directory: `/`
+
+**Environment Variables** (set in Cloudflare Pages dashboard):
+- `VITE_MEDIA_URL`: `https://pub-94fe74ce95b24c09a313b77f56f57910.r2.dev`
+
+### Cloudflare R2 (Media Storage)
+
+Media files (photos and audio) are hosted on Cloudflare R2 for CDN delivery.
+
+**R2 Bucket**: `bird-quiz-media`
+**Public URL**: `https://pub-94fe74ce95b24c09a313b77f56f57910.r2.dev`
+
+The `VITE_MEDIA_URL` environment variable tells the app where to load media from. In development (localhost), it defaults to empty string and loads from local `data/` directory.
+
+### Uploading Media to R2 (rclone)
+
+Media is uploaded to R2 using rclone. Configuration is stored at `~/.config/rclone/rclone.conf`.
+
+**Upload commands:**
+```bash
+# Upload photos
+rclone copy /home/myra/bird-dataset/data/photos r2:bird-quiz-media/data/photos --progress
+
+# Upload audio
+rclone copy /home/myra/bird-dataset/data/audio r2:bird-quiz-media/data/audio --progress
+
+# Upload both
+rclone copy /home/myra/bird-dataset/data r2:bird-quiz-media/data --progress
+
+# List files in bucket
+rclone ls r2:bird-quiz-media/
+
+# Check what would be uploaded (dry run)
+rclone copy /home/myra/bird-dataset/data r2:bird-quiz-media/data --dry-run
+```
+
+**rclone configuration** (`~/.config/rclone/rclone.conf`):
+```ini
+[r2]
+type = s3
+provider = Cloudflare
+access_key_id = e78bf85deb8a230217af221cb7076795
+secret_access_key = [stored in config file]
+endpoint = https://a5d2f62ea6e53926a0654e8084e4f70d.r2.cloudflarestorage.com
+acl = private
+```
+
+### Media Optimization
+
+Before uploading to R2, optimize media files to reduce bandwidth and improve load times.
+
+**Script**: `scripts/optimize_media.py`
+
+**Target specs:**
+- Photos: JPEG ≤100KB, ≤500px width
+- Audio: MP3 ≤128kbps, mono
+
+**Usage:**
+```bash
+# Dry run - see what would be optimized
+python3 scripts/optimize_media.py /home/myra/bird-dataset/data --dry-run
+
+# Optimize all media
+python3 scripts/optimize_media.py /home/myra/bird-dataset/data
+
+# Optimize only photos
+python3 scripts/optimize_media.py /home/myra/bird-dataset/data --photos-only
+
+# Optimize only audio
+python3 scripts/optimize_media.py /home/myra/bird-dataset/data --audio-only
+
+# Verbose output
+python3 scripts/optimize_media.py /home/myra/bird-dataset/data --verbose
+```
+
+The script is **idempotent** - it checks each file's current specs and only processes files that are out of spec. Running it multiple times is safe.
+
+**Requirements**: ImageMagick (`magick`, `identify`) and ffmpeg (`ffmpeg`, `ffprobe`)
+
+### Full Deployment Workflow
+
+After updating the dataset or media:
+
+```bash
+# 1. Optimize media (if new files added)
+python3 scripts/optimize_media.py /home/myra/bird-dataset/data
+
+# 2. Upload media to R2
+rclone copy /home/myra/bird-dataset/data r2:bird-quiz-media/data --progress
+
+# 3. Commit and push code changes
+git add .
+git commit -m "Update dataset"
+git push origin master
+# Cloudflare Pages auto-deploys
+```
 
 ## Data Sources and Attribution
 
