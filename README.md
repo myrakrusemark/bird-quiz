@@ -64,17 +64,49 @@ This app uses openly licensed content from:
 - Species descriptions
 - Licensed under CC BY-SA
 
-## Data Collection
+## Creating the Dataset
 
-The dataset can be refreshed using Python scripts:
+The dataset (photos, audio, metadata) is not included in this repo due to size. You'll need to generate it:
+
+### 1. Get a Xeno-canto API Key
+
+1. Create a free account at [xeno-canto.org](https://xeno-canto.org)
+2. Get your API key from [xeno-canto.org/api/guide](https://xeno-canto.org/api/guide)
+
+### 2. Configure Environment
 
 ```bash
 cd scripts/
-python3 fetch_birds.py --test  # Test with 3 species
-python3 fetch_birds.py         # Full collection
+cp .env.example .env
+# Edit .env and add your API key:
+# XENO_CANTO_API_KEY=your_key_here
 ```
 
-See [PIPELINE.md](PIPELINE.md) for complete CRUD documentation.
+### 3. Run the Collection Pipeline
+
+```bash
+# Test with 3 species first (~5 min)
+python3 fetch_birds.py --test
+
+# Full collection - all species (~30-60 min)
+python3 fetch_birds.py
+```
+
+This will:
+- Fetch bird metadata from Xeno-canto and Wikipedia APIs
+- Download photos to `data/photos/`
+- Download audio recordings to `data/audio/`
+- Generate `data/birds.json` with all metadata
+
+### 4. Start the App
+
+```bash
+cd ../web
+npm install
+npm run dev
+```
+
+See [PIPELINE.md](PIPELINE.md) for complete CRUD documentation (add/remove species, refresh data, etc.).
 
 ## License
 
