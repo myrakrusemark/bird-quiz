@@ -60,9 +60,7 @@ export function QuestionCard({
     recording: BirdRecording | undefined;
   } | null>(null);
 
-  // Audio player for species info recording
-  const speciesAudioSrc = speciesInfoMedia?.recording?.cachedAudio || null;
-  const speciesAudio = useAudioPlayer({ src: speciesAudioSrc });
+  // Note: speciesInfoMedia.recording is available for future audio playback feature
 
   // Cleanup option audio instances when question changes
   useEffect(() => {

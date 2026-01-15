@@ -6,6 +6,9 @@ import { ProgressBar } from './components/ProgressBar';
 import { QuizSettings } from './components/QuizSettings';
 import { RegionSelector } from './components/RegionSelector';
 import { ToastContainer } from './components/Toast';
+import { CookieConsent } from './components/CookieConsent';
+import { Footer } from './components/Footer';
+import { AdBanner } from './components/AdBanner';
 
 function App() {
   // Toast notifications
@@ -120,8 +123,17 @@ function App() {
               onNextQuestion={nextQuestion}
             />
           )}
+
+          {/* Advertisement */}
+          <AdBanner className="mt-6" />
+
+          {/* Footer */}
+          <Footer />
         </div>
       </div>
+
+      {/* Cookie Consent Banner */}
+      <CookieConsent />
     </>
   );
 }

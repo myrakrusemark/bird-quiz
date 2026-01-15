@@ -1,5 +1,9 @@
 import type { Bird, BirdDataset, BirdRecording, BirdPhoto, RegionConfig } from '@/types/bird';
 
+// Configurable base URL for media assets (for CDN/R2 hosting)
+// In production, set VITE_MEDIA_URL to your CDN URL (e.g., https://media.example.com)
+const MEDIA_BASE_URL = import.meta.env.VITE_MEDIA_URL || '';
+
 // Cache for loaded data (single unified dataset)
 let cachedBirdData: BirdDataset | null = null;
 
@@ -84,13 +88,13 @@ export async function getBirdById(id: string, regionConfig?: RegionConfig): Prom
 }
 
 /**
- * Get bird photo URL (relative to public directory)
+ * Get bird photo URL (uses MEDIA_BASE_URL for CDN support)
  */
 export function getBirdPhotoUrl(bird: Bird): string {
   if (bird.photos.length === 0) {
     return '/placeholder-bird.jpg'; // Fallback
   }
-  return `/${bird.photos[0].cached}`;
+  return `${MEDIA_BASE_URL}/${bird.photos[0].cached}`;
 }
 
 /**
@@ -101,21 +105,21 @@ export function getRandomPhoto(bird: Bird): string {
     return '/placeholder-bird.jpg'; // Fallback
   }
   const randomIndex = Math.floor(Math.random() * bird.photos.length);
-  return `/${bird.photos[randomIndex].cached}`;
+  return `${MEDIA_BASE_URL}/${bird.photos[randomIndex].cached}`;
 }
 
 /**
  * Get recording audio URL
  */
 export function getRecordingAudioUrl(recording: BirdRecording): string {
-  return `/${recording.cachedAudio}`;
+  return `${MEDIA_BASE_URL}/${recording.cachedAudio}`;
 }
 
 /**
  * Get recording spectrogram URL
  */
 export function getRecordingSpectrogramUrl(recording: BirdRecording): string {
-  return `/${recording.cachedSpectrogram}`;
+  return `${MEDIA_BASE_URL}/${recording.cachedSpectrogram}`;
 }
 
 /**
@@ -139,7 +143,7 @@ export function getRandomPhotoDifferentFrom(bird: Bird, excludeUrl: string): str
   }
 
   // Filter out the excluded photo
-  const availablePhotos = bird.photos.filter((photo: BirdPhoto) => `/${photo.cached}` !== excludeUrl);
+  const availablePhotos = bird.photos.filter((photo: BirdPhoto) => `${MEDIA_BASE_URL}/${photo.cached}` !== excludeUrl);
 
   // If no alternative photos available, return null
   if (availablePhotos.length === 0) {
@@ -148,7 +152,7 @@ export function getRandomPhotoDifferentFrom(bird: Bird, excludeUrl: string): str
 
   // Select random from remaining photos
   const randomIndex = Math.floor(Math.random() * availablePhotos.length);
-  return `/${availablePhotos[randomIndex].cached}`;
+  return `${MEDIA_BASE_URL}/${availablePhotos[randomIndex].cached}`;
 }
 
 /**
