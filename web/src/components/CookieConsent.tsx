@@ -36,8 +36,8 @@ export function CookieConsent() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gray-900/95 backdrop-blur-sm border-t border-gray-700">
-      <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center gap-4">
-        <div className="flex-1 text-center sm:text-left">
+      <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-4">
+        <div className="flex-1 text-center md:text-left">
           <p className="text-gray-200 text-sm">
             We use cookies to display personalized ads and improve your experience.{' '}
             <a

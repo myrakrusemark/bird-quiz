@@ -81,7 +81,7 @@ function App() {
       {/* Toast notifications */}
       <ToastContainer toasts={toasts} onClose={removeToast} />
 
-      <div className="min-h-screen p-6">
+      <div className="min-h-screen p-0 md:p-6">
         <div className="max-w-4xl mx-auto">
           <ProgressBar
             rollingAccuracy={rollingAccuracy}

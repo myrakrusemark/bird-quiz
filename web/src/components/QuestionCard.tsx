@@ -158,7 +158,7 @@ export function QuestionCard({
           <ExpandableImage
             src={question.mediaUrl}
             alt="Bird to identify"
-            className="w-full max-w-md mx-auto rounded-lg shadow-lg object-cover"
+            className="w-full max-w-md max-h-[40vh] md:max-h-none mx-auto rounded-lg shadow-lg object-cover"
             onExpand={() => setExpandedImage(question.mediaUrl || null)}
             iconPosition="bottom-right"
           />
@@ -185,7 +185,7 @@ export function QuestionCard({
             <ExpandableImage
               src={question.mediaUrl}
               alt="Bird to identify"
-              className="w-full max-w-md mx-auto rounded-lg shadow-lg object-cover"
+              className="w-full max-w-md max-h-[40vh] md:max-h-none mx-auto rounded-lg shadow-lg object-cover"
               onExpand={() => setExpandedImage(question.mediaUrl || null)}
               iconPosition="bottom-right"
             />
@@ -357,10 +357,10 @@ export function QuestionCard({
   const selectedBirdName = selectedOption?.label || '';
 
   return (
-    <div className="max-w-6xl mx-auto p-6 relative">
+    <div className="max-w-6xl mx-auto p-0 md:p-6 relative">
       {/* Question view - unified container */}
       <div
-        className={`bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 shadow-xl overflow-hidden transition-opacity duration-300 ${
+        className={`bg-black/60 backdrop-blur-sm rounded-none md:rounded-lg border border-x-0 md:border-x border-white/20 shadow-xl overflow-hidden transition-opacity duration-300 ${
           questionVisible ? 'opacity-100' : 'opacity-0'
         } ${viewMode === 'result' ? 'absolute invisible pointer-events-none' : ''}`}
       >

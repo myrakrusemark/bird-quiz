@@ -20,7 +20,7 @@ export function AboutSection({ bird, speciesInfoMedia, onExpandImage }: AboutSec
   const speciesAudio = useAudioPlayer({ src: speciesAudioSrc });
 
   return (
-    <div className="bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 shadow-xl p-6">
+    <div className="bg-black/60 backdrop-blur-sm rounded-none md:rounded-lg border border-x-0 md:border-x border-white/20 shadow-xl p-6">
       <h3 className="text-2xl font-bold text-white mb-4" style={{ fontFamily: "'Indie Flower', cursive" }}>
         About the {bird.commonName}
       </h3>

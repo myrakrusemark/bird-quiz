@@ -22,7 +22,7 @@ export function ProgressBar({
 }: ProgressBarProps) {
   return (
     <div className="flex justify-center mb-6">
-      <div className="inline-flex items-center gap-4 bg-black/60 backdrop-blur-sm shadow-xl rounded-lg border border-white/20 px-4 py-2">
+      <div className="inline-flex items-center gap-4 bg-black/60 backdrop-blur-sm shadow-xl rounded-none md:rounded-lg border border-x-0 md:border-x border-white/20 px-4 py-2">
         {/* Region selector button */}
         {currentRegion && onRegionClick && (
           <>

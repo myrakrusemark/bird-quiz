@@ -7,8 +7,8 @@
 
 export function Footer() {
   return (
-    <div className="mt-8 p-6">
-      <footer className="bg-black/60 backdrop-blur-sm shadow-xl rounded-lg border border-white/20 p-6 text-center">
+    <div className="mt-8 p-0 md:p-6">
+      <footer className="bg-black/60 backdrop-blur-sm shadow-xl rounded-none md:rounded-lg border border-x-0 md:border-x border-white/20 p-6 text-center">
       <div className="flex flex-wrap justify-center gap-4 text-sm text-white/80">
         <a
           href="/privacy.html"

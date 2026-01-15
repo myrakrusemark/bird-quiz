@@ -6,7 +6,7 @@ interface ResultHeaderProps {
 
 export function ResultHeader({ isCorrect, selectedBirdName, onNextQuestion }: ResultHeaderProps) {
   return (
-    <div className="bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 shadow-xl p-8 flex items-center justify-between">
+    <div className="bg-black/60 backdrop-blur-sm rounded-none md:rounded-lg border border-x-0 md:border-x border-white/20 shadow-xl p-8 flex items-center justify-between">
       <div
         className={`text-4xl font-bold ${isCorrect ? 'text-green-400' : 'text-red-400'}`}
         style={{ fontFamily: "'Indie Flower', cursive" }}
