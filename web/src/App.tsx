@@ -9,6 +9,7 @@ import { ToastContainer } from './components/Toast';
 import { CookieConsent } from './components/CookieConsent';
 import { Footer } from './components/Footer';
 import { AdBanner } from './components/AdBanner';
+import { WelcomeModal } from './components/WelcomeModal';
 
 function App() {
   // Toast notifications
@@ -16,6 +17,9 @@ function App() {
 
   // Region modal state
   const [regionSelectorOpen, setRegionSelectorOpen] = useState(false);
+
+  // Welcome modal state (for manual trigger from footer)
+  const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
 
   // Get everything from unified quiz context
   const {
@@ -128,9 +132,15 @@ function App() {
           <AdBanner className="mt-6" />
 
           {/* Footer */}
-          <Footer />
+          <Footer onHowToPlayClick={() => setWelcomeModalOpen(true)} />
         </div>
       </div>
+
+      {/* Welcome Modal */}
+      <WelcomeModal
+        forceOpen={welcomeModalOpen}
+        onClose={() => setWelcomeModalOpen(false)}
+      />
 
       {/* Cookie Consent Banner */}
       <CookieConsent />
