@@ -1,14 +1,18 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuizContext } from './contexts/QuizContext';
 import { useToast } from './hooks/useToast';
 import { QuestionCard } from './components/QuestionCard';
 import { ProgressBar } from './components/ProgressBar';
 import { QuizSettings } from './components/QuizSettings';
+import { RegionSelector } from './components/RegionSelector';
 import { ToastContainer } from './components/Toast';
 
 function App() {
   // Toast notifications
   const { toasts, removeToast } = useToast();
+
+  // Region modal state
+  const [regionSelectorOpen, setRegionSelectorOpen] = useState(false);
 
   // Get everything from unified quiz context
   const {
@@ -81,23 +85,32 @@ function App() {
             streak={currentStreak}
             totalAnswered={totalAnswers}
             answers={state.progress.rollingStats.answers}
+            currentRegion={state.currentRegion}
             onSettingsClick={() => toggleSettingsModal(true)}
+            onRegionClick={() => setRegionSelectorOpen(true)}
           />
 
           {/* Settings Modal */}
           <QuizSettings
             settings={state.settings}
-            availableRegions={state.availableRegions}
             onSave={(newSettings) => {
-              // Check if region changed
-              if (newSettings.selectedRegion !== state.settings.selectedRegion) {
-                changeRegion(newSettings.selectedRegion);
-              }
               updateSettings(newSettings);
               toggleSettingsModal(false);
             }}
             onCancel={() => toggleSettingsModal(false)}
             isOpen={state.settingsOpen}
+          />
+
+          {/* Region Selector Modal */}
+          <RegionSelector
+            currentRegion={state.currentRegion}
+            availableRegions={state.availableRegions}
+            onSelectRegion={(regionId) => {
+              changeRegion(regionId);
+              setRegionSelectorOpen(false);
+            }}
+            onClose={() => setRegionSelectorOpen(false)}
+            isOpen={regionSelectorOpen}
           />
 
           {state.currentQuestion && (

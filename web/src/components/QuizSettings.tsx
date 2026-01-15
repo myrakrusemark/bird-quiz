@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import type { QuizSettings, QuestionType, AnswerFormat, RegionConfig } from '@/types/bird';
+import type { QuizSettings, QuestionType, AnswerFormat } from '@/types/bird';
 
 interface QuizSettingsProps {
   settings: QuizSettings;
-  availableRegions: RegionConfig[];
   onSave: (settings: QuizSettings) => void;
   onCancel: () => void;
   isOpen: boolean;
@@ -24,7 +23,7 @@ const ANSWER_FORMAT_LABELS: Record<AnswerFormat, string> = {
   'mixed': 'Mixed (Random)'
 };
 
-export function QuizSettings({ settings, availableRegions, onSave, onCancel, isOpen }: QuizSettingsProps) {
+export function QuizSettings({ settings, onSave, onCancel, isOpen }: QuizSettingsProps) {
   const [localSettings, setLocalSettings] = useState<QuizSettings>(settings);
 
   // Sync local settings when modal opens
@@ -182,46 +181,6 @@ export function QuizSettings({ settings, availableRegions, onSave, onCancel, isO
                     </label>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Region Selection Section */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
-                Region
-              </h3>
-              <div className="space-y-2">
-                {availableRegions.map(region => (
-                  <label
-                    key={region.id}
-                    className={`flex items-center justify-between p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                      localSettings.selectedRegion === region.id
-                        ? 'bg-purple-50 border-purple-300'
-                        : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-                    }`}
-                  >
-                    <div>
-                      <span className="text-gray-700 font-medium block">
-                        {region.displayName}
-                      </span>
-                      <span className="text-gray-500 text-sm">
-                        {region.description}
-                      </span>
-                    </div>
-                    <input
-                      type="radio"
-                      name="region"
-                      checked={localSettings.selectedRegion === region.id}
-                      onChange={() => {
-                        setLocalSettings({
-                          ...localSettings,
-                          selectedRegion: region.id
-                        });
-                      }}
-                      className="w-5 h-5 text-purple-600"
-                    />
-                  </label>
-                ))}
               </div>
             </div>
 

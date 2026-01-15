@@ -1,12 +1,14 @@
 import { AccuracyGraph } from './AccuracyGraph';
-import type { AnswerRecord } from '@/types/bird';
+import type { AnswerRecord, RegionConfig } from '@/types/bird';
 
 interface ProgressBarProps {
   rollingAccuracy: number;
   streak: number;
   totalAnswered: number;
   answers: AnswerRecord[];
+  currentRegion: RegionConfig | null;
   onSettingsClick?: () => void;
+  onRegionClick?: () => void;
 }
 
 export function ProgressBar({
@@ -14,11 +16,29 @@ export function ProgressBar({
   streak,
   totalAnswered: _totalAnswered,
   answers,
-  onSettingsClick
+  currentRegion,
+  onSettingsClick,
+  onRegionClick
 }: ProgressBarProps) {
   return (
     <div className="flex justify-center mb-6">
       <div className="inline-flex items-center gap-4 bg-black/60 backdrop-blur-sm shadow-xl rounded-lg border border-white/20 px-4 py-2">
+        {/* Region selector button */}
+        {currentRegion && onRegionClick && (
+          <>
+            <button
+              onClick={onRegionClick}
+              className="flex items-center gap-2 text-white hover:text-white/90 hover:bg-white/10 px-3 py-1.5 rounded-lg transition-all"
+              aria-label="Change region"
+            >
+              <span className="text-2xl font-bold tracking-wide" style={{ fontFamily: "'Indie Flower', cursive" }}>
+                {currentRegion.displayName}
+              </span>
+            </button>
+            <div className="h-8 w-px bg-white/20" />
+          </>
+        )}
+
         <div className="flex items-center gap-2">
           <p className="text-xl font-bold text-green-300">{rollingAccuracy}%</p>
           {/* Sparkline chart */}

@@ -331,7 +331,7 @@ export function QuestionCard({
             {/* Display bird name for reverse mode (name-to-media) */}
             {question.questionType === 'name-to-media' && (
               <div className="mb-6 text-center">
-                <span className="text-3xl font-bold text-blue-300">
+                <span className="text-3xl font-bold text-blue-300" style={{ fontFamily: "'Indie Flower', cursive" }}>
                   {question.bird.commonName}
                 </span>
               </div>
@@ -357,7 +357,7 @@ export function QuestionCard({
 
       {answered && (
         <div className="mt-6 bg-black/60 backdrop-blur-sm rounded-lg border border-white/20 shadow-xl p-6">
-          <h3 className="text-2xl font-bold text-white mb-4">
+          <h3 className="text-2xl font-bold text-white mb-4" style={{ fontFamily: "'Indie Flower', cursive" }}>
             About the {question.bird.commonName}
           </h3>
 
