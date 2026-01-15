@@ -116,6 +116,20 @@ export function getRecordingAudioUrl(recording: BirdRecording): string {
 }
 
 /**
+ * Get full URL from a cached path (adds MEDIA_BASE_URL prefix)
+ */
+export function getMediaUrl(cachedPath: string): string {
+  return `${MEDIA_BASE_URL}/${cachedPath}`;
+}
+
+/**
+ * Get photo URL from a BirdPhoto object
+ */
+export function getPhotoUrl(photo: BirdPhoto): string {
+  return `${MEDIA_BASE_URL}/${photo.cached}`;
+}
+
+/**
  * Get recording spectrogram URL
  */
 export function getRecordingSpectrogramUrl(recording: BirdRecording): string {

@@ -1,6 +1,7 @@
 import type { Bird, BirdPhoto, BirdRecording } from '@/types/bird';
 import { ExpandableImage } from './ExpandableImage';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { getPhotoUrl, getRecordingAudioUrl } from '@/utils/dataLoader';
 
 interface AboutSectionProps {
   bird: Bird;
@@ -13,7 +14,9 @@ interface AboutSectionProps {
 
 export function AboutSection({ bird, speciesInfoMedia, onExpandImage }: AboutSectionProps) {
   // Audio player for species info recording
-  const speciesAudioSrc = speciesInfoMedia?.recording?.cachedAudio || null;
+  const speciesAudioSrc = speciesInfoMedia?.recording
+    ? getRecordingAudioUrl(speciesInfoMedia.recording)
+    : null;
   const speciesAudio = useAudioPlayer({ src: speciesAudioSrc });
 
   return (
@@ -27,10 +30,10 @@ export function AboutSection({ bird, speciesInfoMedia, onExpandImage }: AboutSec
         <div>
           {speciesInfoMedia?.photo && (
             <ExpandableImage
-              src={speciesInfoMedia.photo.cached}
+              src={getPhotoUrl(speciesInfoMedia.photo)}
               alt={`${bird.commonName}`}
               className="w-full rounded-lg shadow-lg object-cover"
-              onExpand={() => onExpandImage(speciesInfoMedia.photo!.cached)}
+              onExpand={() => onExpandImage(getPhotoUrl(speciesInfoMedia.photo!))}
               iconPosition="bottom-right"
             />
           )}
