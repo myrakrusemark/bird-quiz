@@ -185,7 +185,7 @@ export function QuestionCard({
         )}
 
         {option.type === 'text-image' && option.imageUrl && (
-          <div className="relative w-full">
+          <div className="relative w-full h-full">
             <ExpandableImage
               src={option.imageUrl!}
               alt={option.label || 'Bird'}
@@ -200,7 +200,7 @@ export function QuestionCard({
         )}
 
         {option.type === 'image-only' && option.imageUrl && (
-          <div className="relative w-full">
+          <div className="relative w-full h-full">
             <ExpandableImage
               src={option.imageUrl!}
               alt={option.label || 'Bird'}
@@ -239,7 +239,7 @@ export function QuestionCard({
       return (
         <div
           key={option.id}
-          className={`w-full ${containerPadding} ${borderClasses} ${centerClasses} transition-all cursor-default ${bgColor}`}
+          className={`w-full aspect-square overflow-hidden ${containerPadding} ${borderClasses} ${centerClasses} transition-all cursor-default ${bgColor}`}
         >
           {optionContent}
         </div>
@@ -250,7 +250,7 @@ export function QuestionCard({
       <div
         key={option.id}
         onClick={() => onAnswer(option.id)}
-        className={`w-full ${containerPadding} ${borderClasses} ${centerClasses} transition-all cursor-pointer ${bgColor}`}
+        className={`w-full aspect-square overflow-hidden ${containerPadding} ${borderClasses} ${centerClasses} transition-all cursor-pointer ${bgColor}`}
       >
         {optionContent}
       </div>
@@ -289,8 +289,13 @@ export function QuestionCard({
           </div>
 
           {/* Answer grid */}
-          <div className="lg:w-96 border-t lg:border-t-0 lg:border-l border-white/20 grid grid-cols-2">
-            {question.options.map((option, index) => renderOption(option, index))}
+          <div className="lg:w-96 border-t lg:border-t-0 lg:border-l border-white/20 bg-black/20 relative">
+            {/* Shadow overlays - top on mobile, left on desktop */}
+            <div className="lg:hidden absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-black/50 to-transparent z-10 pointer-events-none" />
+            <div className="hidden lg:block absolute top-0 left-0 bottom-0 w-12 bg-gradient-to-r from-black/50 to-transparent z-10 pointer-events-none" />
+            <div className="grid grid-cols-2">
+              {question.options.map((option, index) => renderOption(option, index))}
+            </div>
           </div>
         </div>
       </div>

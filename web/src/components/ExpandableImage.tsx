@@ -18,7 +18,7 @@ export function ExpandableImage({
     : 'bottom-2 right-2';
 
   return (
-    <div className="relative">
+    <div className="relative w-full h-full">
       <img src={src} alt={alt} className={className} />
       <button
         onClick={(e) => {

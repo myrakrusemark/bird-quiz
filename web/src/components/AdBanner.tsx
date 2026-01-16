@@ -12,12 +12,12 @@
 
 import { useEffect, useRef } from 'react';
 
-// TODO: Replace with your actual AdSense IDs after approval
-const ADSENSE_CLIENT_ID = 'ca-pub-XXXXXXXXXXXXXXXX';
-const ADSENSE_SLOT_ID = 'XXXXXXXXXX';
+// AdSense configuration
+const ADSENSE_CLIENT_ID = 'ca-pub-6788527921390073';
+const ADSENSE_SLOT_ID = ''; // Will be set after creating an ad unit
 
 // Set to true once AdSense is approved and configured
-const ADSENSE_ENABLED = false;
+const ADSENSE_ENABLED = false; // Enable after approval
 
 interface AdBannerProps {
   className?: string;
