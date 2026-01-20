@@ -254,14 +254,14 @@ git push origin master
 - Root directory: `/`
 
 **Environment Variables** (set in Cloudflare Pages dashboard):
-- `VITE_MEDIA_URL`: `https://pub-94fe74ce95b24c09a313b77f56f57910.r2.dev`
+- `VITE_MEDIA_URL`: `https://media.myrakrusemark.com`
 
 ### Cloudflare R2 (Media Storage)
 
 Media files (photos and audio) are hosted on Cloudflare R2 for CDN delivery.
 
 **R2 Bucket**: `bird-quiz-media`
-**Public URL**: `https://pub-94fe74ce95b24c09a313b77f56f57910.r2.dev`
+**Custom Domain**: `https://media.myrakrusemark.com`
 
 The `VITE_MEDIA_URL` environment variable tells the app where to load media from. In development (localhost), it defaults to empty string and loads from local `data/` directory.
 
