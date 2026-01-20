@@ -19,7 +19,7 @@ export function ExpandableImage({
 
   return (
     <div className="relative w-full h-full">
-      <img src={src} alt={alt} className={className} />
+      <img src={src} alt={alt} className={className} loading="lazy" />
       <button
         onClick={(e) => {
           e.stopPropagation();
